@@ -1,10 +1,15 @@
 :root {
-  --primary-color: #ff9d00;
-  --primary-hover-color: #e97c00dc;
-  --secondary-color: #006eba;
-  --secondary-hover-color: #09558c;
-  --background-color: #f6f6f6;
-  --text-color: #333;
+  --primary-color: #ffd700; /* Amarillo brillante */
+  --primary-hover-color: #e6c200; /* Amarillo oscuro para hover */
+  --secondary-color: #000000; /* Negro */
+  --secondary-hover-color: #333333; /* Gris oscuro para hover */
+  --secondary-contrast-color: #fff;
+  --background-color: #000000; /* Fondo negro */
+  --text-color: #ffd700; /* Texto amarillo brillante */
+}
+
+.secondary-contrast-color {
+  color: var(--secondary-contrast-color); /* Texto blanco como contraste */
 }
 
 .primary-color {
@@ -12,8 +17,8 @@
 }
 
 .primary-background {
-  color: var(--primary-color);
-  color: #000;
+  background-color: var(--primary-color);
+  color: #000; /* Texto negro sobre fondo amarillo */
 }
 
 .secondary-color {
@@ -21,6 +26,9 @@
 }
 
 .secondary-background {
-  color: var(--secondary-color);
-  color: #fff;
+  background-color: var(--secondary-color);
+  color: #fff; /* Texto blanco sobre fondo negro */
+}
+.text-color {
+  color: var(--text-color);
 }

@@ -1,21 +1,42 @@
 .wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--secondary-color);
+}
+
+.wrapper::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("../../assets/inversión.jpg") no-repeat;
+    background-size: cover;
+    background-position: center;
+    filter: blur(3px);
+    z-index: 0;
+}
+
+.login-form {
     width: 420px;
-    background: transparent;
-    border: 3px solid rgba(244, 218, 11, 0.2);
+    background: var(--secondary-color);
+    border: 3px solid var(--primary-hover-color);
     border-radius: 10px;
     padding: 30px 40px;
-    position: relative;
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    z-index: 1000;
 }
 
-.wrapper h1 {
+.login-form h1 {
     font-size: 36px;
     text-align: center;
-    color: #f4da0b;
+    color: var(--primary-color);
 }
 
-.wrapper .input-box {
+.login-form .input-box {
     position: relative;
     width: 100%;
     height: 50px;
@@ -26,27 +47,26 @@
     width: 100%;
     height: 100%;
     background: transparent;
-    border: 2px solid rgba(244, 218, 11, 0.2);
+    border: 2px solid var(--primary-hover-color);
     border-radius: 40px;
     font-size: 16px;
-    color: #f4da0b;
+    color: var(--secondary-contrast-color);
     padding: 20px 45px 20px 20px;
 }
 
 .input-box input:focus {
-    outline: 1px solid rgba(244, 218, 11, 0.2);
-    box-shadow: 0 0 10px rgba(244, 218, 11, 0.2);
+    outline: 1px solid var(--primary-hover-color);
 }
 
 .input-box input::placeholder {
-    color: #f4da0b;
+    color: var(--secondary-contrast-color);
 }
 
 .input-box .icon {
     position: absolute;
     right: 20px;
     top: 50%;
-    color: #f4da0b;
+    color: var(--secondary-contrast-color);
     transform: translateY(-50%);
     font-size: 16px;
 }
@@ -54,12 +74,12 @@
 .wrapper button {
     width: 100%;
     height: 45px;
-    background: #f4da0b;
+    background: var(--primary-color);
     border: none;
     outline: none;
     border-radius: 40px;
     cursor: pointer;
     font-size: 16px;
-    color: #000;
+    color: var(--secondary-color);
     font-weight: 700;
 }
