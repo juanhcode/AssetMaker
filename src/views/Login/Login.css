@@ -83,3 +83,8 @@
     color: var(--secondary-color);
     font-weight: 700;
 }
+
+.create-link{
+    display: flex;
+    margin-top: 20px;
+}

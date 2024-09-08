@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import { FaUser, FaLock } from "react-icons/fa";
 
@@ -62,6 +62,7 @@ function Login() {
 
         <button type="submit">Iniciar Sesion</button>
         {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+        <p className="create-link primary-color">¿No tienes cuenta?<Link to="/register" style={{ marginLeft: "10px" }}>Crear cuenta</Link></p>
       </form>
     </div>
   );
