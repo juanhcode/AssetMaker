@@ -1,11 +1,21 @@
-import Header from "../../components/Header/Header";
-import './Home.css';
+import React from 'react';
+import Hero from '../../components/hero/Hero';
+import Info from '../../components/information/Info';
+import Footer from '../../components/footer/Footer';
+import Header from '../../components/Header';
+import { HomeContainer } from './Home.style';
 
-export default function Home() {
-  return (
-    <div className="home">
-      <Header />
-      <main className="container-main">prueba</main>
-    </div>
-  );
-}
+const Home = () => {
+	return (
+		<div>
+			<HomeContainer>
+				<Header />
+				<Hero />
+				<Info />
+				<Footer />
+			</HomeContainer>
+		</div>
+	);
+};
+
+export default Home;
