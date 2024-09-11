@@ -9,7 +9,7 @@ import Api from '../../assets/images/icon-api.svg';
 
 const Info = () => {
 	return (
-		<InfoWrapper>
+		<InfoWrapper id='info'>
 			<Container>
 				<InfoHeader>
 					<H2>¿Por qué elegir AssetMaker?</H2>
