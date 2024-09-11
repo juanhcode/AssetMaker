@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const Button = styled.button`
-	padding: 2rem 3rem;
+	padding: 1.5rem 2.5rem;
 	border-radius: 3rem;
 	background: linear-gradient(
 		45deg,
@@ -11,14 +11,17 @@ export const Button = styled.button`
 	border: none;
 	outline: none;
 	color: var(--background-color);
-	font-size: 1rem;
-
-	&:haver {
+	font-size: 1.6rem;
+	font-weight: bold;
+	text-align: center;
+	
+	&:hover {
 	    background: linear-gradient(
             45deg,
             var(--primary-hover-color) 0%,
-            var(--primary-color) 100%
+			var(--primary-color) 100%
         );
+		color: var(--secondary-contrast-color);
 		cursor: pointer;
 	}
 	&:active {
@@ -39,7 +42,6 @@ export const Container = styled.div`
 		padding: 0 2rem;
 	}
 `;
-
 export const NoRightPaddingContainer = styled.div`
 	padding: 0 0 0 10rem;
 	background: var(--background-color);

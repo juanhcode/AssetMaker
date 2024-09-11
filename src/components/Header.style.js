@@ -19,7 +19,6 @@ export const Nav = styled.nav`
 		max-width: 3rem;
 		display: none;
 	}
-
 	@media (max-width: 600px) {
 		button {
 			display: none;
@@ -31,8 +30,9 @@ export const Nav = styled.nav`
 `;
 export const Ul = styled.ul`
 	display: flex;
-	width: 50%;
-	justify-content: space-between;
+	width: 30%;
+	justify-content: space-around;
+	gap: 2rem;
 	@media (max-width: 600px) {
 		flex-direction: column;
 		width: 100%;
@@ -44,6 +44,7 @@ export const Ul = styled.ul`
 		padding: 4rem 0;
 		text-align: center;
 		transition: all 0.3s ease;
+		gap: 1.5rem;
 	}
 `;
 export const Li = styled.li`

@@ -28,7 +28,6 @@ export const H5 = styled.h5`
 	font-weight: 300;
 	color: var(--background-color);
 `;
-
 export const Para = styled.p`
 	font-size: 1.6rem;
 	color: var(--secondary-contrast-color);

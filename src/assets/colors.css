@@ -29,6 +29,7 @@
   background-color: var(--secondary-color);
   color: #fff; /* Texto blanco sobre fondo negro */
 }
+
 .text-color {
   color: var(--text-color);
 }

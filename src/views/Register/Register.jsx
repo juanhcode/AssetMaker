@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Register.css"
-import { FaUser, FaLock } from "react-icons/fa";
+import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { Link } from "react-router-dom";
 
@@ -13,6 +13,8 @@ const Register = () => {
     });
 
     const [error, setError] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,19 +27,17 @@ const Register = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         setError(null)
-        
         if (formData.password !== formData.confirmPassword) {
-            setError("Passwords do not match");
+            setError("Las contraseñas no coinciden");
             return;
         }
-
         console.log(formData);
     };
 
     return (
         <section className="register-container">
             <form onSubmit={handleSubmit} className="register-form">
-                <h1>Register</h1>
+                <h1>Registrar</h1>
                 <div className="input-register">
                     <input
                         type="text"
@@ -45,7 +45,7 @@ const Register = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        placeholder="Name"
+                        placeholder="Nombre"
                         required
                     />
                     <FaUser className="icon" />
@@ -57,38 +57,44 @@ const Register = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="Email"
+                        placeholder="Correo Electronico"
                         required
                     />
-                    <MdEmail className="icon"/>
+                    <MdEmail className="icon" />
                 </div>
                 <div className="input-register">
                     <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         id="password"
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        placeholder="Password"
+                        placeholder="Contraseña"
                         required
                     />
                     <FaLock className="icon" />
+                    <span className="toggle-visibility" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
                 </div>
                 <div className="input-register">
                     <input
-                        type="password"
+                        type={showConfirmPassword ? "text" : "password"}
                         id="confirmPassword"
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleChange}
-                        placeholder="Confirm Password"
+                        placeholder="Confirmar Contraseña"
                         required
                     />
                     <FaLock className="icon" />
+                    <span className="toggle-visibility" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                        {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
                 </div>
                 <button type="submit">Registrar</button>
-                {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
-                <p className="create-link primary-color">¿Ya tienes cuenta?<Link to="/login" style={{ marginLeft: "10px" }}>Iniciar sesion</Link></p>
+                {error && <p className="error-message-r">{error}</p>}
+                <p className="create-link-r primary-color">¿Ya tienes cuenta?<Link to="/login" style={{ marginLeft: "10px", fontSize: "1.6rem" }}>Iniciar sesion</Link></p>
             </form>
         </section>
     );

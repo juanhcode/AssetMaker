@@ -3,13 +3,13 @@ import { createGlobalStyle } from 'styled-components';
 const GlobalStyle = createGlobalStyle`
 
 :root {
-    --DarkBlue: hsl(233, 26%, 24%);
-    --BrightYellow: hsl(51, 100%, 50%);
-    --DarkYellow: hsl(51, 100%, 50%);
-
-    --White: hsl(233, 8%, 111%);
-    --Black: hsl(0, 0%, 0%);
-    --GrayishBlue: hsl(210, 20%, 90%);
+  --primary-color: #ffd700; /* Amarillo brillante */
+  --primary-hover-color: #e6c200; /* Amarillo oscuro para hover */
+  --secondary-color: #000000; /* Negro */
+  --secondary-hover-color: #333333; /* Gris oscuro para hover */
+  --secondary-contrast-color: #fff;
+  --background-color: #000000; /* Fondo negro */
+  --text-color: #ffd700; /* Texto amarillo brillante */
 }
 
 *{

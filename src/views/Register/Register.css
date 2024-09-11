@@ -1,4 +1,4 @@
-.register-container{
+.register-container {
     position: relative;
     display: flex;
     justify-content: center;
@@ -82,4 +82,26 @@
     color: var(--secondary-contrast-color);
     transform: translateY(-50%);
     font-size: 16px;
+}
+
+.create-link-r {
+    display: flex;
+    margin-top: 20px;
+    font-size: 1.6rem;
+}
+
+.error-message-r {
+    color: red;
+    margin-top: 10px;
+    font-size: 1.6rem;
+}
+
+.toggle-visibility {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--secondary-contrast-color);
 }
