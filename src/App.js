@@ -4,6 +4,7 @@ import Home from "./views/Home/Home";
 import Login from "./views/Login/Login";
 import Register from "./views/Register/Register";
 import GlobalStyle from '../src/assets/styles/GlobalStyle';
+import Info from "./components/information/Info";
 function App() {
   return (
     <div>
@@ -11,6 +12,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<Info/>}/>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="*" element={<Home />} />

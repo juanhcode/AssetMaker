@@ -8,7 +8,6 @@ import close from '../assets/images/icon-close.svg';
 
 const Header = () => {
 	const [open, setOpen] = useState(false);
-
 	const handleClick = () => {
 		setOpen(!open);
 	};
@@ -25,16 +24,10 @@ const Header = () => {
 								<Link to={`#`}>Inicio</Link>
 							</Li>
 							<Li>
-								<Link to={`#`}>Acerca de</Link>
+								<Link to='/about'>Acerca de</Link>
 							</Li>
 							<Li>
 								<Link to={`#`}>Contacto</Link>
-							</Li>
-							<Li>
-								<Link to={`#`}>Banco</Link>
-							</Li>
-							<Li>
-								<Link to={`#`}>Carrera</Link>
 							</Li>
 						</Ul>
 						<Link to='/Login'>
