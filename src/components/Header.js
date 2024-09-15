@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Button, Container } from '../assets/styles/Common.style';
 import hamburger from '../assets/images/icon-hamburger.svg';
 import close from '../assets/images/icon-close.svg';
+import { HashLink } from 'react-router-hash-link';
 
 const Header = () => {
 	const [open, setOpen] = useState(false);
@@ -24,7 +25,7 @@ const Header = () => {
 								<Link to={`#`}>Inicio</Link>
 							</Li>
 							<Li>
-								<Link to='/about'>Acerca de</Link>
+								<HashLink smooth to='/#info'>Acerca de</HashLink>
 							</Li>
 							<Li>
 								<Link to={`#`}>Contacto</Link>

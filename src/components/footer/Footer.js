@@ -7,6 +7,7 @@ import iconYoutube from '../../assets/images/icon-youtube.svg';
 import iconPinterest from '../../assets/images/icon-pinterest.svg';
 import { Container } from '../../assets/styles/Common.style';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 
 const Footer = () => {
 	return (
@@ -26,7 +27,7 @@ const Footer = () => {
 							</div>
 						</div>
 						<div className='link'>
-							<Link to='/about'>Acerca de</Link>
+							<HashLink smooth to='/#info'>Acerca de</HashLink>
 							<Link to='/contact'>Contacto</Link> <Link to='/blog'>Blog</Link>
 						</div>
 						<div className='link'>
