@@ -9,28 +9,9 @@ on:
     - cron: '25 21 * * 5'
 
 jobs:
-  # Job para CI/CD del proyecto React
   build:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20' # Ajusta según tu versión de Node.js
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build application
-        run: npm run build
-
-  # Job para análisis de calidad con SonarCloud
-  sonarcloud-analysis:
-    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -43,10 +24,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Run tests with coverage
+        run: npm run test -- --coverage
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:
-          projectBaseDir: .
+          projectBaseDir: . # Directorio raíz del proyecto
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
