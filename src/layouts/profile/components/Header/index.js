@@ -1,18 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState, useEffect } from "react";
 
 // prop-types is a library for typechecking of props.
@@ -50,8 +35,8 @@ function Header({ children }) {
         : setTabsOrientation("horizontal");
     }
 
-    /** 
-     The event listener that's calling the handleTabsOrientation function when resizing the window.
+    /**
+      The event listener that's calling the handleTabsOrientation function when resizing the window.
     */
     window.addEventListener("resize", handleTabsOrientation);
 
@@ -110,7 +95,7 @@ function Header({ children }) {
             <AppBar position="static">
               <Tabs orientation={tabsOrientation} value={tabValue} onChange={handleSetTabValue}>
                 <Tab
-                  label="App"
+                  label="Aplicación"
                   icon={
                     <Icon fontSize="small" sx={{ mt: -0.25 }}>
                       home
@@ -118,7 +103,7 @@ function Header({ children }) {
                   }
                 />
                 <Tab
-                  label="Message"
+                  label="Mensaje"
                   icon={
                     <Icon fontSize="small" sx={{ mt: -0.25 }}>
                       email
@@ -126,7 +111,7 @@ function Header({ children }) {
                   }
                 />
                 <Tab
-                  label="Settings"
+                  label="Configuración"
                   icon={
                     <Icon fontSize="small" sx={{ mt: -0.25 }}>
                       settings

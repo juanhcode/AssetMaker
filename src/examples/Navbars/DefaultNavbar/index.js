@@ -1,18 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState, useEffect } from "react";
 
 // react-router components
@@ -39,7 +24,7 @@ import breakpoints from "assets/theme/base/breakpoints";
 
 // Material Dashboard 2 React context
 import { useMaterialUIController } from "context";
-
+import logo from "../../../assets/images/Logo.png";
 function DefaultNavbar({ transparent, light, action }) {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
@@ -62,9 +47,9 @@ function DefaultNavbar({ transparent, light, action }) {
       }
     }
 
-    /** 
-     The event listener that's calling the displayMobileNavbar function when 
-     resizing the window.
+    /**
+      The event listener that's calling the displayMobileNavbar function when
+      resizing the window.
     */
     window.addEventListener("resize", displayMobileNavbar);
 
@@ -109,9 +94,7 @@ function DefaultNavbar({ transparent, light, action }) {
           lineHeight={1}
           pl={{ xs: 0, lg: 1 }}
         >
-          <MDTypography variant="button" fontWeight="bold" color={light ? "white" : "dark"}>
-            Material Dashboard 2
-          </MDTypography>
+          <img src={logo} alt="Logo" style={{ width: "100%", height: "auto" }} />
         </MDBox>
         <MDBox color="inherit" display={{ xs: "none", lg: "flex" }} m={0} p={0}>
           <DefaultNavbarLink icon="donut_large" name="dashboard" route="/dashboard" light={light} />
