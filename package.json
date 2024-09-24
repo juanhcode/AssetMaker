@@ -32,9 +32,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start"
+    "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
+    "test": "jest"
   },
   "eslintConfig": {
     "extends": [
@@ -66,6 +66,8 @@
     "prettier": "2.8.8"
   },
   "overrides": {
-    "svgo": "3.0.2"
+    "svgo": "3.0.2",
+    "jest": "^27.5.1"
   }
 }
+
