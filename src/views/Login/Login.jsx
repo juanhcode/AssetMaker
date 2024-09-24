@@ -14,9 +14,7 @@ function Login() {
     e.preventDefault();
     setError(null);
     try {
-      const response = await fetch(
-        "https://mocki.io/v1/63693984-26bf-4687-90e7-a45c3ab2852e"
-      );
+      const response = await fetch("https://mocki.io/v1/63693984-26bf-4687-90e7-a45c3ab2852e");
       if (!response.ok) {
         setError("No existe el usuario");
       }
@@ -64,7 +62,12 @@ function Login() {
         </div>
         <button type="submit">Iniciar Sesion</button>
         {error && <p className="error-message-i">{error}</p>}
-        <p className="create-link-i primary-color">¿No tienes cuenta?<Link to="/register" style={{ marginLeft: "10px", fontSize: "1.6rem" }}>Crear cuenta</Link></p>
+        <p className="create-link-i primary-color">
+          ¿No tienes cuenta?
+          <Link to="/register" style={{ marginLeft: "10px", fontSize: "1.6rem" }}>
+            Crear cuenta
+          </Link>
+        </p>
       </form>
     </div>
   );
