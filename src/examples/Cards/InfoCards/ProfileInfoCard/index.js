@@ -1,20 +1,5 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// react-routers components
-import { Link } from "react-router-dom";
+import React from "react";
+import IconButton from "@mui/material/IconButton";
 
 // prop-types is library for typechecking of props
 import PropTypes from "prop-types";
@@ -33,7 +18,7 @@ import MDTypography from "components/MDTypography";
 import colors from "assets/theme/base/colors";
 import typography from "assets/theme/base/typography";
 
-function ProfileInfoCard({ title, description, info, social, action, shadow }) {
+function ProfileInfoCard({ title, description, info, social, actions, shadow }) {
   const labels = [];
   const values = [];
   const { socialMediaColors } = colors;
@@ -90,11 +75,15 @@ function ProfileInfoCard({ title, description, info, social, action, shadow }) {
         <MDTypography variant="h6" fontWeight="medium" textTransform="capitalize">
           {title}
         </MDTypography>
-        <MDTypography component={Link} to={action.route} variant="body2" color="secondary">
-          <Tooltip title={action.tooltip} placement="top">
-            <Icon>edit</Icon>
-          </Tooltip>
-        </MDTypography>
+        <MDBox>
+          {actions.map(({ onClick, tooltip, icon }, index) => (
+            <Tooltip key={index} title={tooltip} placement="top">
+              <IconButton onClick={onClick}>
+                <Icon>{icon}</Icon>
+              </IconButton>
+            </Tooltip>
+          ))}
+        </MDBox>
       </MDBox>
       <MDBox p={2}>
         <MDBox mb={2} lineHeight={1}>
@@ -130,10 +119,13 @@ ProfileInfoCard.propTypes = {
   description: PropTypes.string.isRequired,
   info: PropTypes.objectOf(PropTypes.string).isRequired,
   social: PropTypes.arrayOf(PropTypes.object).isRequired,
-  action: PropTypes.shape({
-    route: PropTypes.string.isRequired,
-    tooltip: PropTypes.string.isRequired,
-  }).isRequired,
+  actions: PropTypes.arrayOf(
+    PropTypes.shape({
+      onClick: PropTypes.func.isRequired,
+      tooltip: PropTypes.string.isRequired,
+      icon: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   shadow: PropTypes.bool,
 };
 

@@ -1,21 +1,12 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
+import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
-import Divider from "@mui/material/Divider";
 
 // @mui icons
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -36,7 +27,6 @@ import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
 
 // Overview page components
 import Header from "layouts/profile/components/Header";
-import PlatformSettings from "layouts/profile/components/PlatformSettings";
 
 // Data
 import profilesListData from "layouts/profile/data/profilesListData";
@@ -52,6 +42,53 @@ import team3 from "assets/images/team-3.jpg";
 import team4 from "assets/images/team-4.jpg";
 
 function Overview() {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [profileData, setProfileData] = useState({
+    Nombre: "",
+    Móvil: "",
+    Email: "",
+    Ubicación: "",
+  });
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const handleDeleteOpen = () => setDeleteOpen(true);
+  const handleDeleteClose = () => setDeleteOpen(false);
+
+  const handleDelete = () => {
+    setProfileData({
+      Nombre: "",
+      Móvil: "",
+      Email: "",
+      Ubicación: "",
+    });
+    console.log("Perfil eliminado");
+    handleDeleteClose();
+    handleLogout();
+  };
+
+  const handleLogout = () => {
+    // Aquí puedes implementar la lógica para cerrar sesión
+    console.log("Sesión cerrada");
+    // Redirigir a la página de inicio o de inicio de sesión
+    // Puedes usar navigate('/ruta-deseada') si usas react-router
+    navigate("/");
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProfileData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleSubmit = () => {
+    // Aquí puedes implementar la lógica para guardar la información actualizada
+    console.log("Datos actualizados:", profileData);
+    handleClose();
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -60,19 +97,10 @@ function Overview() {
         <MDBox mt={5} mb={3}>
           <Grid container spacing={1}>
             <Grid item xs={12} md={6} xl={4}>
-              <PlatformSettings />
-            </Grid>
-            <Grid item xs={12} md={6} xl={4} sx={{ display: "flex" }}>
-              <Divider orientation="vertical" sx={{ ml: -2, mr: 1 }} />
               <ProfileInfoCard
-                title="profile information"
-                description="Hi, I’m Alec Thompson, Decisions: If you can’t decide, the answer is no. If two equally difficult paths, choose the one more painful in the short term (pain avoidance is creating an illusion of equality)."
-                info={{
-                  fullName: "Alec M. Thompson",
-                  mobile: "(44) 123 1234 123",
-                  email: "alecthompson@mail.com",
-                  location: "USA",
-                }}
+                title="Información del perfil"
+                description="Hola, soy Christian, ..."
+                info={profileData}
                 social={[
                   {
                     link: "https://www.facebook.com/CreativeTim/",
@@ -90,11 +118,22 @@ function Overview() {
                     color: "instagram",
                   },
                 ]}
-                action={{ route: "", tooltip: "Edit Profile" }}
+                actions={[
+                  {
+                    onClick: handleOpen,
+                    tooltip: "Actualizar Usuario",
+                    icon: "edit",
+                  },
+                  {
+                    onClick: handleDeleteOpen,
+                    tooltip: "Eliminar Usuario",
+                    icon: "delete",
+                  },
+                ]}
                 shadow={false}
               />
-              <Divider orientation="vertical" sx={{ mx: 0 }} />
             </Grid>
+
             <Grid item xs={12} xl={4}>
               <ProfilesList title="conversations" profiles={profilesListData} shadow={false} />
             </Grid>
@@ -102,7 +141,7 @@ function Overview() {
         </MDBox>
         <MDBox pt={2} px={2} lineHeight={1.25}>
           <MDTypography variant="h6" fontWeight="medium">
-            Projects
+            Proyectos
           </MDTypography>
           <MDBox mb={1}>
             <MDTypography variant="button" color="text">
@@ -195,6 +234,108 @@ function Overview() {
           </Grid>
         </MDBox>
       </Header>
+
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <MDBox
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            borderRadius: "8px",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <MDTypography id="modal-modal-title" variant="h6" component="h2" mb={2}>
+            Actualizar Usuario
+          </MDTypography>
+          <MDBox component="form">
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Nombre"
+              name="Nombre"
+              value={profileData.Nombre}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Móvil"
+              name="Móvil"
+              value={profileData.Móvil}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Email"
+              name="Email"
+              value={profileData.Email}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Ubicación"
+              name="Ubicación"
+              value={profileData.Ubicación}
+              onChange={handleChange}
+            />
+            <MDBox mt={2} display="flex" justifyContent="flex-end">
+              <Button onClick={handleClose} color="secondary" sx={{ mr: 1 }}>
+                Cancelar
+              </Button>
+              <Button variant="contained" color="primary" onClick={handleSubmit}>
+                Guardar
+              </Button>
+            </MDBox>
+          </MDBox>
+        </MDBox>
+      </Modal>
+      <Modal
+        open={deleteOpen}
+        onClose={handleDeleteClose}
+        aria-labelledby="modal-delete-title"
+        aria-describedby="modal-delete-description"
+      >
+        <MDBox
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            borderRadius: "8px",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <MDTypography id="modal-delete-title" variant="h6" component="h2" mb={2}>
+            Eliminar Usuario
+          </MDTypography>
+          <MDTypography id="modal-delete-description" variant="body1" mb={2}>
+            ¿Estás seguro de que deseas eliminar tu perfil? Esta acción no se puede deshacer.
+          </MDTypography>
+          <MDBox mt={2} display="flex" justifyContent="flex-end">
+            <Button onClick={handleDeleteClose} color="secondary" sx={{ mr: 1 }}>
+              Cancelar
+            </Button>
+            <Button variant="contained" color="error" onClick={handleDelete}>
+              Eliminar
+            </Button>
+          </MDBox>
+        </MDBox>
+      </Modal>
       <Footer />
     </DashboardLayout>
   );

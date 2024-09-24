@@ -130,6 +130,11 @@ export default function App() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundImage:
+                  "url(${(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : logo})",
               },
             }}
           />
