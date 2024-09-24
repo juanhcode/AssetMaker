@@ -50,6 +50,7 @@ function Overview() {
     Móvil: "",
     Email: "",
     Ubicación: "",
+    Descripción: "",
   });
 
   const handleOpen = () => setOpen(true);
@@ -64,6 +65,7 @@ function Overview() {
       Móvil: "",
       Email: "",
       Ubicación: "",
+      Descripción: "",
     });
     console.log("Perfil eliminado");
     handleDeleteClose();
@@ -99,7 +101,7 @@ function Overview() {
             <Grid item xs={12} md={6} xl={4}>
               <ProfileInfoCard
                 title="Información del perfil"
-                description="Hola, soy Christian, ..."
+                description={profileData.Descripción}
                 info={profileData}
                 social={[
                   {
@@ -289,6 +291,16 @@ function Overview() {
               name="Ubicación"
               value={profileData.Ubicación}
               onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Descripción"
+              name="Descripción"
+              value={profileData.Descripción}
+              onChange={handleChange}
+              multiline
+              rows={4}
             />
             <MDBox mt={2} display="flex" justifyContent="flex-end">
               <Button onClick={handleClose} color="secondary" sx={{ mr: 1 }}>
