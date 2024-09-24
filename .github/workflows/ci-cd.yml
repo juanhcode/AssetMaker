@@ -1,4 +1,4 @@
-name: CI/CD Pipeline with CodeQL
+name: CI/CD Pipeline with SonarCloud
 
 on:
   push:
@@ -9,7 +9,6 @@ on:
     - cron: '25 21 * * 5'
 
 jobs:
-  # Job para CI/CD del proyecto React
   build:
     runs-on: ubuntu-latest
 
@@ -20,53 +19,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20' # Ajusta según tu versión de Node.js
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Lint code
-        run: npm run lint
+      - name: Run tests with coverage
+        run: npm run test -- --coverage
 
-      - name: Build application
-        run: npm run build
-
-  # Job para análisis de seguridad con CodeQL
-  codeql-analysis:
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-      packages: read
-      actions: read
-      contents: read
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - language: javascript-typescript
-            build-mode: none
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # Inicializa CodeQL y selecciona el lenguaje a analizar
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
         with:
-          languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.build-mode }}
-
-      # Si el modo de build es manual, incluye comandos de build aquí
-      - if: matrix.build-mode == 'manual'
-        shell: bash
-        run: |
-          echo 'Reemplaza con comandos de build manual si es necesario'
-          exit 1
-
-      # Ejecuta el análisis de CodeQL
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:${{ matrix.language }}"
+          projectBaseDir: . # Directorio raíz del proyecto
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
