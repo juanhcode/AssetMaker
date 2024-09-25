@@ -108,7 +108,7 @@ export default function App() {
     </MDBox>
   );
 
-  const showSidenav = !["/", "/login", "/register"].includes(pathname);
+  const showSidenav = !["/", "/Login", "/login", "/register"].includes(pathname);
 
   return (
     <ThemeProvider theme={darkMode ? themeDark : theme}>
@@ -125,8 +125,8 @@ export default function App() {
             onMouseLeave={handleOnMouseLeave}
             sx={{
               "& .MuiSidenav-brand": {
-                width: "100%",
-                height: "100%",
+                width: "150px",
+                height: "80px",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
