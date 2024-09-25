@@ -20,7 +20,6 @@ function Login() {
       }
       const user = await response.json();
       if (user.email === email && user.password === password) {
-        alert("Entraste mamawebo");
         navigate("/home");
       } else {
         setError("Correo electrónico o contraseña incorrectos");

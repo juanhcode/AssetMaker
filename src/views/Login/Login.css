@@ -98,6 +98,7 @@
     display: flex;
     margin-top: 20px;
     font-size: 1.6rem;
+    color: #ffd700;
 }
 
 .error-message-i {
