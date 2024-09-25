@@ -55,7 +55,6 @@ function Overview() {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
   const handleDeleteOpen = () => setDeleteOpen(true);
   const handleDeleteClose = () => setDeleteOpen(false);
 
@@ -67,16 +66,11 @@ function Overview() {
       Ubicación: "",
       Descripción: "",
     });
-    console.log("Perfil eliminado");
     handleDeleteClose();
     handleLogout();
   };
 
   const handleLogout = () => {
-    // Aquí puedes implementar la lógica para cerrar sesión
-    console.log("Sesión cerrada");
-    // Redirigir a la página de inicio o de inicio de sesión
-    // Puedes usar navigate('/ruta-deseada') si usas react-router
     navigate("/");
   };
 
@@ -86,8 +80,6 @@ function Overview() {
   };
 
   const handleSubmit = () => {
-    // Aquí puedes implementar la lógica para guardar la información actualizada
-    console.log("Datos actualizados:", profileData);
     handleClose();
   };
 
@@ -95,27 +87,29 @@ function Overview() {
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox mb={2} />
-      <Header>
+      <Header userName={profileData.Nombre}>
         <MDBox mt={5} mb={3}>
           <Grid container spacing={1}>
             <Grid item xs={12} md={6} xl={4}>
               <ProfileInfoCard
                 title="Información del perfil"
                 description={profileData.Descripción}
-                info={profileData}
+                info={{
+                  Nombre: profileData.Nombre,
+                  Móvil: profileData.Móvil,
+                  Email: profileData.Email,
+                  Ubicación: profileData.Ubicación,
+                }}
                 social={[
                   {
-                    link: "https://www.facebook.com/CreativeTim/",
                     icon: <FacebookIcon />,
                     color: "facebook",
                   },
                   {
-                    link: "https://twitter.com/creativetim",
                     icon: <TwitterIcon />,
                     color: "twitter",
                   },
                   {
-                    link: "https://www.instagram.com/creativetimofficial/",
                     icon: <InstagramIcon />,
                     color: "instagram",
                   },

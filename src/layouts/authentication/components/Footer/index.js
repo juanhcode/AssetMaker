@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 // @mui material components
 import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
-import Icon from "@mui/material/Icon";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -45,7 +44,7 @@ function Footer({ light }) {
             })}
           >
             <MDBox component="li" px={2} lineHeight={1}>
-              <Link href="" target="_blank">
+              <Link href="#" target="_blank">
                 <MDTypography
                   variant="button"
                   fontWeight="regular"
@@ -56,7 +55,7 @@ function Footer({ light }) {
               </Link>
             </MDBox>
             <MDBox component="li" px={2} lineHeight={1}>
-              <Link href="" target="_blank">
+              <Link href="#" target="_blank">
                 <MDTypography
                   variant="button"
                   fontWeight="regular"
@@ -67,7 +66,7 @@ function Footer({ light }) {
               </Link>
             </MDBox>
             <MDBox component="li" pl={2} lineHeight={1}>
-              <Link href="" target="_blank">
+              <Link href="#" target="_blank">
                 <MDTypography
                   variant="button"
                   fontWeight="regular"
