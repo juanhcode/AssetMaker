@@ -118,8 +118,11 @@ export default function App() {
         <>
           <Sidenav
             color={sidenavColor}
-            brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : logo}
-            brandName="AssetMaker"
+            brandName={
+              <span style={{ color: "#ffd700", textAlign: "Center", fontSize: "15px" }}>
+                AssetMaker
+              </span>
+            }
             routes={routes}
             onMouseEnter={handleOnMouseEnter}
             onMouseLeave={handleOnMouseLeave}
@@ -130,11 +133,6 @@ export default function App() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-                backgroundImage:
-                  "url(${(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : logo})",
               },
             }}
           />
