@@ -20,7 +20,7 @@ function Login() {
       }
       const user = await response.json();
       if (user.email === email && user.password === password) {
-        navigate("/home");
+        navigate("/dashboard");
       } else {
         setError("Correo electrónico o contraseña incorrectos");
       }
