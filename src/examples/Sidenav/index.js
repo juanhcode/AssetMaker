@@ -44,7 +44,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const handleLogout = () => {
     localStorage.removeItem("authToken");
 
-    navigate("/login");
+    navigate("/Login");
   };
 
   let textColor = "white";

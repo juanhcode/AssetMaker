@@ -100,20 +100,7 @@ function Overview() {
                   Email: profileData.Email,
                   Ubicación: profileData.Ubicación,
                 }}
-                social={[
-                  {
-                    icon: <FacebookIcon />,
-                    color: "facebook",
-                  },
-                  {
-                    icon: <TwitterIcon />,
-                    color: "twitter",
-                  },
-                  {
-                    icon: <InstagramIcon />,
-                    color: "instagram",
-                  },
-                ]}
+                social={[]}
                 actions={[
                   {
                     onClick: handleOpen,

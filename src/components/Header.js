@@ -33,7 +33,7 @@ const Header = () => {
                 <Link to={`#`}>Contacto</Link>
               </Li>
             </Ul>
-            <Link to="/Login">
+            <Link to="/login">
               <Button>Iniciar Sesión</Button>
             </Link>
             <img
