@@ -12,10 +12,6 @@ import Register from "views/Register/Register";
 
 const routes = [
   {
-    type: "collapse",
-    name: "Landing",
-    key: "landing",
-    icon: <Icon fontSize="small">landing</Icon>,
     route: "/",
     component: <Home />,
   },

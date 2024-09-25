@@ -46,11 +46,11 @@ function Overview() {
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [profileData, setProfileData] = useState({
-    Nombre: "",
-    Móvil: "",
-    Email: "",
-    Ubicación: "",
-    Descripción: "",
+    Nombre: "Christian",
+    Móvil: "1234567890",
+    Email: "prueba@gmail.com",
+    Ubicación: "colombia",
+    Descripción: "Este es mi perfil",
   });
 
   const handleOpen = () => setOpen(true);
