@@ -3,57 +3,61 @@ export const HeroWrapper = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 1rem;
   @media (max-width: 600px) {
     flex-direction: column-reverse;
+    gap: 0.5rem;
   }
 `;
 export const HeroContent = styled.div`
-  width: 40%;
+  flex: 1;
+  padding: 1rem;
   @media (max-width: 1200px) {
-    width: 30%;
+    width: 70%;
   }
   @media (max-width: 767px) {
-    width: 50%;
-  }
-  @media (max-width: 600px) {
     width: 100%;
   }
 `;
 export const HeroImage = styled.div`
-  width: 50%;
+  flex: 1;
   position: relative;
-  height: 100vh;
+  height: 70vh;
   background-size: cover;
-  background-position: 15% 85%;
+  background-position: center;
   img {
     position: absolute;
-    top: -14rem;
-    right: -10rem;
-    max-width: 100%;
+    max-width: 90%;
+    top: 10%;
+    right: 35%;
+  }
+  &.loaded img {
+    display: block;
   }
   @media (max-width: 1200px) {
-    width: 70%;
-    background-position: 10% 90%;
+    width: 65%;
     img {
-      top: 0rem;
-      right: 0;
-      max-width: 60rem;
+      max-width: 70%;
+      top: 0;
+      right: 10%;
     }
   }
   @media (max-width: 767px) {
-    background-position: 4% 50%;
-    width: 50%;
+    width: 40%;
     img {
-      max-width: 40rem;
-      top: 13rem;
+      max-width: 100%;
+      top: 20%;
+      right: 10%;
     }
   }
   @media (max-width: 600px) {
     width: 100%;
-    background-position: 30% 100%;
     img {
       max-width: 100%;
       top: -10rem;
+      right: 0;
     }
   }
 
@@ -63,15 +67,8 @@ export const HeroImage = styled.div`
 `;
 export const HeroContentWrapper = styled.div`
   max-width: 40rem;
-  @media (max-width: 991px) {
-    max-width: 100%;
-  }
-  p {
-    padding: 2rem 0;
-  }
   @media (max-width: 600px) {
-    max-width: 100%;
     text-align: center;
-    padding: 4rem;
+    padding: 2rem;
   }
 `;

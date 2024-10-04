@@ -16,6 +16,7 @@ import Icon from "@mui/material/Icon";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
+import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
 import Breadcrumbs from "examples/Breadcrumbs";
@@ -89,9 +90,30 @@ function DashboardNavbar({ absolute, light, isMini }) {
       onClose={handleCloseMenu}
       sx={{ mt: 2 }}
     >
-      <NotificationItem icon={<Icon>email</Icon>} title="Revisa los nuevo mensajes" />
-      <NotificationItem icon={<Icon>podcasts</Icon>} title="Gestionar sesiones de podcast" />
-      <NotificationItem icon={<Icon>shopping_cart</Icon>} title="Pago completado con éxito" />
+      <NotificationItem
+        icon={<Icon sx={{ fontSize: "2rem" }}>email</Icon>}
+        title={
+          <MDTypography variant="h6" fontWeight="medium">
+            Revisa los nuevos mensajes
+          </MDTypography>
+        }
+      />
+      <NotificationItem
+        icon={<Icon sx={{ fontSize: "2rem" }}>podcasts</Icon>}
+        title={
+          <MDTypography variant="h6" fontWeight="medium">
+            Gestionar sesiones de podcast
+          </MDTypography>
+        }
+      />
+      <NotificationItem
+        icon={<Icon sx={{ fontSize: "2rem" }}>shopping_cart</Icon>}
+        title={
+          <MDTypography variant="h6" fontWeight="medium">
+            Pago completado con éxito
+          </MDTypography>
+        }
+      />
     </Menu>
   );
 
@@ -121,45 +143,72 @@ function DashboardNavbar({ absolute, light, isMini }) {
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
             <MDBox pr={1}>
-              <MDInput label="Buscar aquí" />
+              <MDInput
+                label="Buscar aquí"
+                InputLabelProps={{
+                  sx: {
+                    fontSize: "1.2rem",
+                    display: "flex",
+                    justifyContent: "center",
+                    width: "100%",
+                  },
+                }}
+              />
             </MDBox>
             <MDBox color={light ? "white" : "inherit"}>
               <Link to="/profile">
-                <IconButton sx={navbarIconButton} size="small" disableRipple>
-                  <Icon sx={iconsStyle}>account_circle</Icon>
+                <IconButton
+                  sx={{
+                    ...navbarIconButton,
+                    color: light || darkMode ? "white.main" : "dark.main",
+                    fontSize: "2rem",
+                  }}
+                  size="small"
+                  disableRipple
+                >
+                  <Icon sx={{ ...iconsStyle, fontSize: "2.5rem" }}> account_circle</Icon>
                 </IconButton>
               </Link>
               <IconButton
-                size="small"
                 disableRipple
                 color="inherit"
-                sx={navbarMobileMenu}
+                sx={{
+                  ...navbarMobileMenu,
+                  color: light || darkMode ? "white.main" : "dark.main",
+                  fontSize: "2rem",
+                }}
                 onClick={handleMiniSidenav}
               >
-                <Icon sx={iconsStyle} fontSize="medium">
+                <Icon sx={{ ...iconsStyle, fontSize: "2.5rem" }}>
                   {miniSidenav ? "menu_open" : "menu"}
                 </Icon>
               </IconButton>
               <IconButton
-                size="small"
                 disableRipple
                 color="inherit"
-                sx={navbarIconButton}
+                sx={{
+                  ...navbarIconButton,
+                  color: light || darkMode ? "white.main" : "dark.main",
+                  fontSize: "2rem",
+                }}
                 onClick={handleConfiguratorOpen}
               >
-                <Icon sx={iconsStyle}>settings</Icon>
+                <Icon sx={{ ...iconsStyle, fontSize: "2.5rem" }}>settings</Icon>
               </IconButton>
               <IconButton
-                size="small"
                 disableRipple
                 color="inherit"
-                sx={navbarIconButton}
+                sx={{
+                  ...navbarIconButton,
+                  color: light || darkMode ? "white.main" : "dark.main",
+                  fontSize: "2rem",
+                }}
                 aria-controls="notification-menu"
                 aria-haspopup="true"
                 variant="contained"
                 onClick={handleOpenMenu}
               >
-                <Icon sx={iconsStyle}>notifications</Icon>
+                <Icon sx={{ ...iconsStyle, fontSize: "2.5rem" }}>notifications</Icon>
               </IconButton>
               {renderMenu()}
             </MDBox>

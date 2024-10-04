@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 
 // @mui material components
 import Link from "@mui/material/Link";
-import Icon from "@mui/material/Icon";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -20,7 +19,12 @@ function Footer({ company, links }) {
     links.map((link) => (
       <MDBox key={link.name} component="li" px={2} lineHeight={1}>
         <Link href={link.href} target="_blank">
-          <MDTypography variant="button" fontWeight="regular" color="text">
+          <MDTypography
+            variant="button"
+            fontWeight="regular"
+            color="text"
+            sx={{ fontSize: "1.2rem" }}
+          >
             {link.name}
           </MDTypography>
         </Link>
@@ -47,7 +51,6 @@ function Footer({ company, links }) {
           mt: 3,
           mb: 0,
           p: 0,
-
           [breakpoints.up("lg")]: {
             mt: 0,
           },

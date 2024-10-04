@@ -3,26 +3,28 @@ import { Navigation, Nav, Ul, Li, Logo } from "./Header.style";
 import logo from "../assets/images/Logo.png";
 import { Link } from "react-router-dom";
 import { Button, Container } from "../assets/styles/Common.style";
-import hamburger from "../assets/images/icon-hamburger.svg";
-import close from "../assets/images/icon-close.svg";
 import { HashLink } from "react-router-hash-link";
+import classNames from "classnames";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
   const handleClick = () => {
     setOpen(!open);
   };
+
   return (
-    <div>
+    <header>
       <Container>
         <Navigation>
           <Nav>
             <Logo>
-              <img src={logo} alt="" />
+              <img src={logo} alt="Logo" />
             </Logo>
-            <Ul className={open ? `active` : `navlinks`}>
+            <Ul className={classNames("navlinks", { open })}>
               <Li>
-                <Link to={`#`}>Inicio</Link>
+                <HashLink smooth to="/#">
+                  Inicio
+                </HashLink>
               </Li>
               <Li>
                 <HashLink smooth to="/#info">
@@ -30,22 +32,18 @@ const Header = () => {
                 </HashLink>
               </Li>
               <Li>
-                <Link to={`#`}>Contacto</Link>
+                <HashLink smooth to="/#contacto">
+                  Contacto
+                </HashLink>
               </Li>
             </Ul>
-            <Link to="/login">
+            <Link to="/login" className="desktop-button">
               <Button>Iniciar Sesión</Button>
             </Link>
-            <img
-              src={open ? close : hamburger}
-              className="hamburger"
-              alt=""
-              onClick={handleClick}
-            />
           </Nav>
         </Navigation>
       </Container>
-    </div>
+    </header>
   );
 };
 

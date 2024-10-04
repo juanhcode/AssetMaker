@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { NoRightPaddingContainer } from "../../assets/styles/Common.style";
 import { H1, Para } from "../../assets/styles/Typography.style";
 import { HeroWrapper, HeroContent, HeroImage, HeroContentWrapper } from "./Hero.style";
-import HeroImg from "../../assets/images/Fund.png";
+import HeroImg from "../../assets/images/landing.jpg";
 
 const Hero = () => {
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  const handleImageLoad = () => {
+    setIsImageLoaded(true);
+  };
+
   return (
     <NoRightPaddingContainer>
       <HeroWrapper>
@@ -20,8 +26,8 @@ const Hero = () => {
             </Para>
           </HeroContentWrapper>
         </HeroContent>
-        <HeroImage>
-          <img src={HeroImg} alt="hero" />
+        <HeroImage className={isImageLoaded ? "loaded" : ""}>
+          <img src={HeroImg} alt="hero" loading="lazy" onLoad={handleImageLoad} />
         </HeroImage>
       </HeroWrapper>
     </NoRightPaddingContainer>
