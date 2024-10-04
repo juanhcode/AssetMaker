@@ -33,7 +33,7 @@ const inicialPortafoliosData = [
   },
 ];
 
-function Projects() {
+function Portafolios() {
   const [portafolios, setPortafolios] = useState(inicialPortafoliosData);
   const [open, setOpen] = useState(false);
   const [newPortafolio, setNewPortafolio] = useState({
@@ -232,4 +232,4 @@ function Projects() {
   );
 }
 
-export default Projects;
+export default Portafolios;
