@@ -1,18 +1,4 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
+import React, { useState, useEffect } from "react";
 // @mui material components
 import Grid from "@mui/material/Grid";
 
@@ -32,11 +18,25 @@ import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
 import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
 
 // Dashboard components
-import Projects from "layouts/dashboard/components/Projects";
-import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
+import Projects from "layouts/dashboard/components/projects";
 
 function Dashboard() {
   const { sales, tasks } = reportsLineChartData;
+
+  const [cantidadPortafolios, setCantidadPortafolios] = useState(0);
+  const [activosEnCartera, setActivosEnCartera] = useState(0);
+  const [rentabilidadTotal, setRentabilidadTotal] = useState(0);
+  const [perfilRiesgo, setPerfilRiesgo] = useState("");
+
+  useEffect(() => {
+    const obtenerDatos = async () => {
+      setCantidadPortafolios(5);
+      setActivosEnCartera(20);
+      setRentabilidadTotal(15);
+      setPerfilRiesgo("Alto");
+    };
+    obtenerDatos();
+  }, []);
 
   return (
     <DashboardLayout>
@@ -47,13 +47,21 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="dark"
-                icon="weekend"
-                title="Bookings"
-                count={281}
+                icon="inventory"
+                title={
+                  <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+                    Cantidad de portafolios
+                  </span>
+                }
+                count={
+                  <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+                    {cantidadPortafolios}
+                  </span>
+                }
                 percentage={{
                   color: "success",
-                  amount: "+55%",
-                  label: "than lask week",
+                  amount: "",
+                  label: <span style={{ fontSize: "1.1rem" }}>Actualizado automáticamente</span>,
                 }}
               />
             </MDBox>
@@ -61,13 +69,17 @@ function Dashboard() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                icon="leaderboard"
-                title="Today's Users"
-                count="2,300"
+                icon="trending_up"
+                title={
+                  <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Activos en cartera</span>
+                }
+                count={
+                  <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{activosEnCartera}</span>
+                }
                 percentage={{
                   color: "success",
-                  amount: "+3%",
-                  label: "than last month",
+                  amount: "",
+                  label: <span style={{ fontSize: "1.1rem" }}>Actualizado automáticamente</span>,
                 }}
               />
             </MDBox>
@@ -76,13 +88,17 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="success"
-                icon="store"
-                title="Revenue"
-                count="34k"
+                icon="pie_chart"
+                title={
+                  <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Perfil de riesgo</span>
+                }
+                count={
+                  <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{perfilRiesgo}</span>
+                }
                 percentage={{
-                  color: "success",
-                  amount: "+1%",
-                  label: "than yesterday",
+                  color: "warning",
+                  amount: "",
+                  label: <span style={{ fontSize: "1.1rem" }}>Actualizado automáticamente</span>,
                 }}
               />
             </MDBox>
@@ -90,28 +106,41 @@ function Dashboard() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                color="primary"
-                icon="person_add"
-                title="Followers"
-                count="+91"
+                color="success"
+                icon="show_chart"
+                title={
+                  <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Rentabilidad total</span>
+                }
+                count={
+                  <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+                    {`${rentabilidadTotal}%`}
+                  </span>
+                }
                 percentage={{
                   color: "success",
                   amount: "",
-                  label: "Just updated",
+                  label: <span style={{ fontSize: "1.1rem" }}>Actualizado automáticamente</span>,
                 }}
               />
             </MDBox>
           </Grid>
         </Grid>
+
         <MDBox mt={4.5}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={4}>
               <MDBox mb={3}>
                 <ReportsBarChart
                   color="info"
-                  title="website views"
-                  description="Last Campaign Performance"
-                  date="campaign sent 2 days ago"
+                  title={
+                    <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+                      Visitas al sitio web
+                    </span>
+                  }
+                  description={
+                    <span style={{ fontSize: "1.1rem" }}>Resultados de la última campaña</span>
+                  }
+                  date={<span style={{ fontSize: "1.1rem" }}>campaña enviada hace 2 días</span>}
                   chart={reportsBarChartData}
                 />
               </MDBox>
@@ -120,13 +149,16 @@ function Dashboard() {
               <MDBox mb={3}>
                 <ReportsLineChart
                   color="success"
-                  title="daily sales"
+                  title={
+                    <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>Ventas diarias</span>
+                  }
                   description={
                     <>
-                      (<strong>+15%</strong>) increase in today sales.
+                      (<strong>+15%</strong>)
+                      <span style={{ fontSize: "1.1rem" }}>aumento de las ventas actuales.</span>
                     </>
                   }
-                  date="updated 4 min ago"
+                  date={<span style={{ fontSize: "1.1rem" }}>actualizado hace 4 min</span>}
                   chart={sales}
                 />
               </MDBox>
@@ -135,9 +167,15 @@ function Dashboard() {
               <MDBox mb={3}>
                 <ReportsLineChart
                   color="dark"
-                  title="completed tasks"
-                  description="Last Campaign Performance"
-                  date="just updated"
+                  title={
+                    <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+                      Tareas completadas
+                    </span>
+                  }
+                  description={
+                    <span style={{ fontSize: "1.1rem" }}>Resultados de la última campaña</span>
+                  }
+                  date={<span style={{ fontSize: "1.1rem" }}>recién actualizado</span>}
                   chart={tasks}
                 />
               </MDBox>
@@ -146,11 +184,8 @@ function Dashboard() {
         </MDBox>
         <MDBox>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={8}>
+            <Grid item xs={12}>
               <Projects />
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <OrdersOverview />
             </Grid>
           </Grid>
         </MDBox>

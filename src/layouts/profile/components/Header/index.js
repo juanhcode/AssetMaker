@@ -1,49 +1,33 @@
 import { useState, useEffect } from "react";
-
-// prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
-
-// @mui material components
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import AppBar from "@mui/material/AppBar";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Icon from "@mui/material/Icon";
-
-// Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
-
-// Material Dashboard 2 React base styles
 import breakpoints from "assets/theme/base/breakpoints";
-
-// Images
 import burceMars from "assets/images/bruce-mars.jpg";
 import backgroundImage from "assets/images/bg-profile.jpeg";
 
-function Header({ children, userName }) {
-  const [tabsOrientation, setTabsOrientation] = useState("horizontal");
+function Header({ children, userName = "Christian" }) {
+  const [tabsOrientation, setTabsOrientation] = useState(
+    window.innerWidth < breakpoints.values.sm ? "vertical" : "horizontal"
+  );
   const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
-    // A function that sets the orientation state of the tabs.
     function handleTabsOrientation() {
-      return window.innerWidth < breakpoints.values.sm
-        ? setTabsOrientation("vertical")
-        : setTabsOrientation("horizontal");
+      const newOrientation = window.innerWidth < breakpoints.values.sm ? "vertical" : "horizontal";
+      if (newOrientation !== tabsOrientation) {
+        setTabsOrientation(newOrientation);
+      }
     }
 
-    /**
-      The event listener that's calling the handleTabsOrientation function when resizing the window.
-    */
     window.addEventListener("resize", handleTabsOrientation);
-
-    // Call the handleTabsOrientation function to set the state with the initial value.
-    handleTabsOrientation();
-
-    // Remove event listener on cleanup
     return () => window.removeEventListener("resize", handleTabsOrientation);
   }, [tabsOrientation]);
 
@@ -83,10 +67,10 @@ function Header({ children, userName }) {
           </Grid>
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
-              <MDTypography variant="h5" fontWeight="medium">
-                {userName || "Christian"}
+              <MDTypography variant="h4" fontWeight="medium">
+                {userName}
               </MDTypography>
-              <MDTypography variant="button" color="text" fontWeight="regular">
+              <MDTypography variant="h5" color="text" fontWeight="regular">
                 Inversor
               </MDTypography>
             </MDBox>
@@ -97,7 +81,7 @@ function Header({ children, userName }) {
                 <Tab
                   label="Aplicación"
                   icon={
-                    <Icon fontSize="small" sx={{ mt: -0.25 }}>
+                    <Icon fontSize="large" sx={{ mt: -0.25 }}>
                       home
                     </Icon>
                   }
@@ -105,7 +89,7 @@ function Header({ children, userName }) {
                 <Tab
                   label="Mensaje"
                   icon={
-                    <Icon fontSize="small" sx={{ mt: -0.25 }}>
+                    <Icon fontSize="large" sx={{ mt: -0.25 }}>
                       email
                     </Icon>
                   }
@@ -113,7 +97,7 @@ function Header({ children, userName }) {
                 <Tab
                   label="Configuración"
                   icon={
-                    <Icon fontSize="small" sx={{ mt: -0.25 }}>
+                    <Icon fontSize="large" sx={{ mt: -0.25 }}>
                       settings
                     </Icon>
                   }
@@ -128,13 +112,6 @@ function Header({ children, userName }) {
   );
 }
 
-// Setting default props for the Header
-Header.defaultProps = {
-  children: "",
-  userName: "Christian",
-};
-
-// Typechecking props for the Header
 Header.propTypes = {
   children: PropTypes.node,
   userName: PropTypes.string,

@@ -42,10 +42,10 @@ function ProfileInfoCard({ title, description, info, social, actions, shadow }) 
   // Render the card info items
   const renderItems = labels.map((label, key) => (
     <MDBox key={label} display="flex" py={1} pr={2}>
-      <MDTypography variant="button" fontWeight="bold" textTransform="capitalize">
+      <MDTypography variant="h5" fontWeight="bold" textTransform="capitalize">
         {label}: &nbsp;
       </MDTypography>
-      <MDTypography variant="button" fontWeight="regular" color="text">
+      <MDTypography variant="h5" fontWeight="regular" color="text">
         &nbsp;{values[key]}
       </MDTypography>
     </MDBox>
@@ -72,13 +72,13 @@ function ProfileInfoCard({ title, description, info, social, actions, shadow }) 
   return (
     <Card sx={{ height: "100%", boxShadow: !shadow && "none" }}>
       <MDBox display="flex" justifyContent="space-between" alignItems="center" pt={2} px={2}>
-        <MDTypography variant="h6" fontWeight="medium" textTransform="capitalize">
+        <MDTypography variant="h4" fontWeight="medium" textTransform="capitalize">
           {title}
         </MDTypography>
         <MDBox>
           {actions.map(({ onClick, tooltip, icon }, index) => (
             <Tooltip key={index} title={tooltip} placement="top">
-              <IconButton onClick={onClick}>
+              <IconButton onClick={onClick} sx={{ fontSize: "2rem", padding: "12px" }}>
                 <Icon>{icon}</Icon>
               </IconButton>
             </Tooltip>
@@ -87,7 +87,7 @@ function ProfileInfoCard({ title, description, info, social, actions, shadow }) 
       </MDBox>
       <MDBox p={2}>
         <MDBox mb={2} lineHeight={1}>
-          <MDTypography variant="button" color="text" fontWeight="light">
+          <MDTypography variant="h5" color="text" fontWeight="light">
             {description}
           </MDTypography>
         </MDBox>
@@ -97,7 +97,7 @@ function ProfileInfoCard({ title, description, info, social, actions, shadow }) 
         <MDBox>
           {renderItems}
           <MDBox display="flex" py={1} pr={2}>
-            <MDTypography variant="button" fontWeight="bold" textTransform="capitalize">
+            <MDTypography variant="h5" fontWeight="bold" textTransform="capitalize">
               social: &nbsp;
             </MDTypography>
             {renderSocial}

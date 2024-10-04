@@ -10,7 +10,7 @@
 
 Coded by www.creative-tim.com
 
- =========================================================
+  =========================================================
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
@@ -36,7 +36,14 @@ export default function data() {
   const Project = ({ image, name }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
       <MDAvatar src={image} name={name} size="sm" variant="rounded" />
-      <MDTypography display="block" variant="button" fontWeight="medium" ml={1} lineHeight={1}>
+      <MDTypography
+        display="block"
+        variant="button"
+        fontWeight="medium"
+        ml={1}
+        lineHeight={1}
+        sx={{ fontSize: "1.2rem" }}
+      >
         {name}
       </MDTypography>
     </MDBox>
@@ -44,7 +51,7 @@ export default function data() {
 
   const Progress = ({ color, value }) => (
     <MDBox display="flex" alignItems="center">
-      <MDTypography variant="caption" color="text" fontWeight="medium">
+      <MDTypography variant="caption" color="text" fontWeight="medium" sx={{ fontSize: "1.2rem" }}>
         {value}%
       </MDTypography>
       <MDBox ml={0.5} width="9rem">
@@ -53,125 +60,215 @@ export default function data() {
     </MDBox>
   );
 
+  const Header = ({ children }) => (
+    <MDTypography variant="h6" sx={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+      {children}
+    </MDTypography>
+  );
+
   return {
     columns: [
-      { Header: "project", accessor: "project", width: "30%", align: "left" },
-      { Header: "budget", accessor: "budget", align: "left" },
-      { Header: "status", accessor: "status", align: "center" },
-      { Header: "completion", accessor: "completion", align: "center" },
-      { Header: "action", accessor: "action", align: "center" },
+      { Header: <Header>proyectos</Header>, accessor: "proyectos", width: "30%", align: "left" },
+      { Header: <Header>presupuesto</Header>, accessor: "presupuesto", align: "left" },
+      { Header: <Header>estado</Header>, accessor: "estado", align: "center" },
+      { Header: <Header>finalización</Header>, accessor: "finalización", align: "center" },
+      { Header: <Header>acción</Header>, accessor: "acción", align: "center" },
     ],
 
     rows: [
       {
-        project: <Project image={LogoAsana} name="Asana" />,
-        budget: (
-          <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
+        proyectos: <Project image={LogoAsana} name="Asana" />,
+        presupuesto: (
+          <MDTypography
+            component="a"
+            href="#"
+            variant="button"
+            color="text"
+            fontWeight="medium"
+            sx={{ fontSize: "1.2rem" }}
+          >
             $2,500
           </MDTypography>
         ),
-        status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        estado: (
+          <MDTypography
+            component="a"
+            href="#"
+            variant="caption"
+            color="text"
+            fontWeight="medium"
+            sx={{ fontSize: "1.2rem" }}
+          >
             working
           </MDTypography>
         ),
-        completion: <Progress color="info" value={60} />,
-        action: (
+        finalización: <Progress color="info" value={60} />,
+        acción: (
           <MDTypography component="a" href="#" color="text">
             <Icon>more_vert</Icon>
           </MDTypography>
         ),
       },
       {
-        project: <Project image={logoGithub} name="Github" />,
-        budget: (
-          <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
+        proyectos: <Project image={logoGithub} name="Github" />,
+        presupuesto: (
+          <MDTypography
+            component="a"
+            href="#"
+            variant="button"
+            color="text"
+            fontWeight="medium"
+            sx={{ fontSize: "1.2rem" }}
+          >
             $5,000
           </MDTypography>
         ),
-        status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        estado: (
+          <MDTypography
+            component="a"
+            href="#"
+            variant="caption"
+            color="text"
+            fontWeight="medium"
+            sx={{ fontSize: "1.2rem" }}
+          >
             done
           </MDTypography>
         ),
-        completion: <Progress color="success" value={100} />,
-        action: (
+        finalización: <Progress color="success" value={100} />,
+        acción: (
           <MDTypography component="a" href="#" color="text">
             <Icon>more_vert</Icon>
           </MDTypography>
         ),
       },
       {
-        project: <Project image={logoAtlassian} name="Atlassian" />,
-        budget: (
-          <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
+        proyectos: <Project image={logoAtlassian} name="Atlassian" />,
+        presupuesto: (
+          <MDTypography
+            component="a"
+            href="#"
+            variant="button"
+            color="text"
+            fontWeight="medium"
+            sx={{ fontSize: "1.2rem" }}
+          >
             $3,400
           </MDTypography>
         ),
-        status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        estado: (
+          <MDTypography
+            component="a"
+            href="#"
+            variant="caption"
+            color="text"
+            fontWeight="medium"
+            sx={{ fontSize: "1.2rem" }}
+          >
             canceled
           </MDTypography>
         ),
-        completion: <Progress color="error" value={30} />,
-        action: (
+        finalización: <Progress color="error" value={30} />,
+        acción: (
           <MDTypography component="a" href="#" color="text">
             <Icon>more_vert</Icon>
           </MDTypography>
         ),
       },
       {
-        project: <Project image={logoSpotify} name="Spotify" />,
-        budget: (
-          <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
+        proyectos: <Project image={logoSpotify} name="Spotify" />,
+        presupuesto: (
+          <MDTypography
+            component="a"
+            href="#"
+            variant="button"
+            color="text"
+            fontWeight="medium"
+            sx={{ fontSize: "1.2rem" }}
+          >
             $14,000
           </MDTypography>
         ),
-        status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        estado: (
+          <MDTypography
+            component="a"
+            href="#"
+            variant="caption"
+            color="text"
+            fontWeight="medium"
+            sx={{ fontSize: "1.2rem" }}
+          >
             working
           </MDTypography>
         ),
-        completion: <Progress color="info" value={80} />,
-        action: (
+        finalización: <Progress color="info" value={80} />,
+        acción: (
           <MDTypography component="a" href="#" color="text">
             <Icon>more_vert</Icon>
           </MDTypography>
         ),
       },
       {
-        project: <Project image={logoSlack} name="Slack" />,
-        budget: (
-          <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
+        proyectos: <Project image={logoSlack} name="Slack" />,
+        presupuesto: (
+          <MDTypography
+            component="a"
+            href="#"
+            variant="button"
+            color="text"
+            fontWeight="medium"
+            sx={{ fontSize: "1.2rem" }}
+          >
             $1,000
           </MDTypography>
         ),
-        status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        estado: (
+          <MDTypography
+            component="a"
+            href="#"
+            variant="caption"
+            color="text"
+            fontWeight="medium"
+            sx={{ fontSize: "1.2rem" }}
+          >
             canceled
           </MDTypography>
         ),
-        completion: <Progress color="error" value={0} />,
-        action: (
+        finalización: <Progress color="error" value={0} />,
+        acción: (
           <MDTypography component="a" href="#" color="text">
             <Icon>more_vert</Icon>
           </MDTypography>
         ),
       },
       {
-        project: <Project image={logoInvesion} name="Invesion" />,
-        budget: (
-          <MDTypography component="a" href="#" variant="button" color="text" fontWeight="medium">
+        proyectos: <Project image={logoInvesion} name="Invesion" />,
+        presupuesto: (
+          <MDTypography
+            component="a"
+            href="#"
+            variant="button"
+            color="text"
+            fontWeight="medium"
+            sx={{ fontSize: "1.2rem" }}
+          >
             $2,300
           </MDTypography>
         ),
-        status: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        estado: (
+          <MDTypography
+            component="a"
+            href="#"
+            variant="caption"
+            color="text"
+            fontWeight="medium"
+            sx={{ fontSize: "1.2rem" }}
+          >
             done
           </MDTypography>
         ),
-        completion: <Progress color="success" value={100} />,
-        action: (
+        finalización: <Progress color="success" value={100} />,
+        acción: (
           <MDTypography component="a" href="#" color="text">
             <Icon>more_vert</Icon>
           </MDTypography>
