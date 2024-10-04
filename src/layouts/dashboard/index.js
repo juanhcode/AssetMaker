@@ -18,7 +18,7 @@ import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
 import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
 
 // Dashboard components
-import Projects from "layouts/dashboard/components/projects";
+import Projects from "./components/projects";
 
 function Dashboard() {
   const { sales, tasks } = reportsLineChartData;
