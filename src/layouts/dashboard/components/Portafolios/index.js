@@ -220,10 +220,18 @@ function Portafolios() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="secondary" style={{ fontSize: "1rem" }}>
+          <Button
+            onClick={handleClose}
+            variant="outlined"
+            style={{ fontSize: "1rem", color: "#FF5733", borderColor: "#FF5733" }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleAddPortafolio} color="primary" style={{ fontSize: "1rem" }}>
+          <Button
+            onClick={handleAddPortafolio}
+            variant="contained"
+            style={{ fontSize: "1rem", color: "#FFF" }}
+          >
             Agregar
           </Button>
         </DialogActions>

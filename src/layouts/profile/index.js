@@ -143,14 +143,18 @@ function Overview() {
             <MDBox mt={2} display="flex" justifyContent="flex-end">
               <Button
                 onClick={() => handleModal("update", false)}
-                color="secondary"
-                sx={{ mr: 1, fontSize: "1rem" }}
+                variant="outlined"
+                sx={{
+                  mr: 1,
+                  fontSize: "1rem",
+                  color: "#FF5733",
+                  borderColor: "#FF5733",
+                }}
               >
                 Cancelar
               </Button>
               <Button
                 variant="contained"
-                color="primary"
                 onClick={handleSubmit}
                 sx={{ color: (theme) => theme.palette.common.white, fontSize: "1rem" }}
               >
@@ -189,14 +193,13 @@ function Overview() {
           <MDBox mt={2} display="flex" justifyContent="flex-end">
             <Button
               onClick={() => handleModal("delete", false)}
-              color="secondary"
-              sx={{ mr: 1, fontSize: "1rem" }}
+              variant="outlined"
+              sx={{ mr: 1, fontSize: "1rem", color: "#FF5733", borderColor: "#FF5733" }}
             >
               Cancelar
             </Button>
             <Button
               variant="contained"
-              color="primary"
               onClick={handleDelete}
               sx={{ color: (theme) => theme.palette.common.white, fontSize: "1rem" }}
             >
