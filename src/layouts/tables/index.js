@@ -68,7 +68,8 @@ function Tables() {
     handleClose();
   };
 
-  console.log("Error", pRows);
+  const paginationModel = { page: 0, pageSize: 10 };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -100,7 +101,8 @@ function Tables() {
                 <DataGrid
                   rows={pRows}
                   columns={pColumns}
-                  pageSizeOptions={[5]}
+                  pageSizeOptions={[5, 10]}
+                  initialState={{ pagination: { paginationModel } }}
                   checkboxSelection
                   disableRowSelectionOnClick
                   sx={{

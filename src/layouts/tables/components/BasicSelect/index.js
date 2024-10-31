@@ -12,8 +12,8 @@ export default function SelectSmall() {
   };
 
   const inputLabelStyles = {
-    fontSize: "2rem",
-    color: "rgba(255, 255, 255, 0.8)",
+    fontSize: "1rem",
+    color: "#FF0000",
   };
 
   const selectStyles = {
@@ -39,8 +39,11 @@ export default function SelectSmall() {
   };
 
   return (
+    /* eslint-disable */
     <FormControl sx={{ m: 1, minWidth: 110, marginLeft: 90 }} size="small">
-      <InputLabel id="tipo-select-label" sx={inputLabelStyles}>
+      <InputLabel 
+        id="tipo-select-label"
+      >
         Tipo
       </InputLabel>
       <Select
@@ -49,6 +52,7 @@ export default function SelectSmall() {
         label="Tipo"
         onChange={handleChange}
         sx={selectStyles}
+        
       >
         <MenuItem value={10} sx={menuItemStyles}>
           Criptomonedas
@@ -58,5 +62,6 @@ export default function SelectSmall() {
         </MenuItem>
       </Select>
     </FormControl>
+    /* eslint-enable */
   );
 }
