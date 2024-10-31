@@ -71,11 +71,11 @@ export default function data() {
 
   return {
     columns: [
-      { Header: <Header>autor</Header>, accessor: "autor", width: "45%", align: "left" },
-      { Header: <Header>función</Header>, accessor: "función", align: "left" },
-      { Header: <Header>estado</Header>, accessor: "estado", align: "center" },
-      { Header: <Header>empleado</Header>, accessor: "empleado", align: "center" },
-      { Header: <Header>acción</Header>, accessor: "acción", align: "center" },
+      { Header: <Header>Autor</Header>, accessor: "autor", width: "45%", align: "left" },
+      { Header: <Header>Función</Header>, accessor: "función", align: "left" },
+      { Header: <Header>Estado</Header>, accessor: "estado", align: "center" },
+      { Header: <Header>Empleado</Header>, accessor: "empleado", align: "center" },
+      { Header: <Header>Acción</Header>, accessor: "acción", align: "center" },
     ],
 
     rows: [
@@ -163,105 +163,6 @@ export default function data() {
             sx={{ fontSize: "1.2rem" }}
           >
             19/09/17
-          </MDTypography>
-        ),
-        acción: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="caption"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            Edit
-          </MDTypography>
-        ),
-      },
-      {
-        autor: <Author image={team3} name="Michael Levi" email="michael@creative-tim.com" />,
-        función: <Job title="Programator" description="Developer" />,
-        estado: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="online" color="success" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        empleado: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="caption"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            24/12/08
-          </MDTypography>
-        ),
-        acción: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="caption"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            Edit
-          </MDTypography>
-        ),
-      },
-      {
-        autor: <Author image={team3} name="Richard Gran" email="richard@creative-tim.com" />,
-        función: <Job title="Manager" description="Executive" />,
-        estado: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="offline" color="dark" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        empleado: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="caption"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            04/10/21
-          </MDTypography>
-        ),
-        acción: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="caption"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            Edit
-          </MDTypography>
-        ),
-      },
-      {
-        autor: <Author image={team4} name="Miriam Eric" email="miriam@creative-tim.com" />,
-        función: <Job title="Programator" description="Developer" />,
-        estado: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="offline" color="dark" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        empleado: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="caption"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            14/09/20
           </MDTypography>
         ),
         acción: (

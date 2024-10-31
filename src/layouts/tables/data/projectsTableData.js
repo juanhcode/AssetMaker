@@ -1,279 +1,111 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/function-component-definition */
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
-  =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// @mui material components
-import Icon from "@mui/material/Icon";
-
-// Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-import MDAvatar from "components/MDAvatar";
-import MDProgress from "components/MDProgress";
+import * as React from "react";
+import { useState, useEffect } from "react";
 
 // Images
-import LogoAsana from "assets/images/small-logos/logo-asana.svg";
-import logoGithub from "assets/images/small-logos/github.svg";
-import logoAtlassian from "assets/images/small-logos/logo-atlassian.svg";
-import logoSlack from "assets/images/small-logos/logo-slack.svg";
-import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
-import logoInvesion from "assets/images/small-logos/logo-invision.svg";
+import logoBitcoin from "assets/images/small-logos/bitcoin-btc-logo.png";
+import logoLitecoin from "assets/images/small-logos/litecoin-ltc-logo.png";
+import logoSolana from "assets/images/small-logos/solana-sol-logo.png";
+import logoBNB from "assets/images/small-logos/bnb-bnb-logo.png";
+import { symbol } from "prop-types";
 
-export default function data() {
-  const Project = ({ image, name }) => (
-    <MDBox display="flex" alignItems="center" lineHeight={1}>
-      <MDAvatar src={image} name={name} size="sm" variant="rounded" />
-      <MDTypography
-        display="block"
-        variant="button"
-        fontWeight="medium"
-        ml={1}
-        lineHeight={1}
-        sx={{ fontSize: "1.2rem" }}
-      >
-        {name}
-      </MDTypography>
-    </MDBox>
-  );
+// Asocia cada símbolo de criptomoneda con su logo correspondiente
+const logos = {
+  BTC: logoBitcoin,
+  LTC: logoLitecoin,
+  SOL: logoSolana,
+  BNB: logoBNB,
+};
 
-  const Progress = ({ color, value }) => (
-    <MDBox display="flex" alignItems="center">
-      <MDTypography variant="caption" color="text" fontWeight="medium" sx={{ fontSize: "1.2rem" }}>
-        {value}%
-      </MDTypography>
-      <MDBox ml={0.5} width="9rem">
-        <MDProgress variant="gradient" color={color} value={value} />
-      </MDBox>
-    </MDBox>
-  );
+export default function Data() {
+  const [rows, setRows] = useState([]);
 
-  const Header = ({ children }) => (
-    <MDTypography variant="h6" sx={{ fontSize: "1.5rem", fontWeight: "bold" }}>
-      {children}
-    </MDTypography>
-  );
+  // Función asíncrona para obtener datos de la API
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        "https://paper-api.alpaca.markets/v2/assets?status=active&asset_class=crypto",
+        {
+          headers: {
+            "Apca-Api-Key-Id": "PK6NYSR7W1ZRXWLX2NC9",
+            "Apca-Api-Secret-Key": "UTTc5XPc8J8qIpRVHTLmzi5ZIg30xsgy0yipL9b3",
+          },
+        }
+      );
+      const data = await response.json();
+      const formattedData = await Promise.all(
+        data.map(async (item) => {
+          const price = await fetchPriceOfCrypto(item.symbol);
+          return {
+            id: (data.indexOf(item) + 1).toString(),
+            asset: item.symbol.split("/")[0],
+            currency: item.symbol,
+            name: item.name.split("/")[0].trim(),
+            price: price || "N/A",
+          };
+        })
+      );
+      formattedData.sort((a, b) => b.price - a.price);
+      setRows(formattedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      //setError("No se pudieron cargar los datos.");
+    }
+  };
+
+  const fetchPriceOfCrypto = async (symbol) => {
+    try {
+      /* eslint-disable */
+      const response = await fetch(
+        `https://data.alpaca.markets/v1beta3/crypto/us/bars?symbols=${
+          symbol.split("/")[0]
+        }%2F${
+          symbol.split("/")[1]
+        }&timeframe=1H&start=2024-10-30T00%3A00%3A00Z&end=2024-10-30T16%3A00%3A00-04%3A00&limit=1&sort=desc`,
+        {
+          headers: {
+            "Apca-Api-Key-Id": "PK6NYSR7W1ZRXWLX2NC9",
+            "Apca-Api-Secret-Key": "UTTc5XPc8J8qIpRVHTLmzi5ZIg30xsgy0yipL9b3",
+          },
+        }
+      );
+      /* eslint-enable */
+      const data = await response.json();
+      console.log(data.bars[symbol][0].c);
+      return data.bars[symbol][0].c;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      //setError("No se pudieron cargar los datos.");
+    }
+  };
+
+  // useEffect para ejecutar fetchData cuando se cargue el componente
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return {
     columns: [
-      { Header: <Header>proyectos</Header>, accessor: "proyectos", width: "30%", align: "left" },
-      { Header: <Header>presupuesto</Header>, accessor: "presupuesto", align: "left" },
-      { Header: <Header>estado</Header>, accessor: "estado", align: "center" },
-      { Header: <Header>finalización</Header>, accessor: "finalización", align: "center" },
-      { Header: <Header>acción</Header>, accessor: "acción", align: "center" },
+      { field: "id", headerName: "#", width: 70 },
+      {
+        field: "asset",
+        headerName: "Activo",
+        width: 160,
+        renderCell: (params) => (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <img
+              src={logos[params.row.asset]}
+              alt={params.row.asset}
+              style={{ width: 24, height: 24, marginRight: 8 }}
+            />
+            {params.row.asset}
+          </div>
+        ),
+      },
+      { field: "currency", headerName: "Moneda", width: 130 },
+      { field: "name", headerName: "Nombre", width: 130 },
+      { field: "price", headerName: "Precio", type: "number", width: 100 },
     ],
 
-    rows: [
-      {
-        proyectos: <Project image={LogoAsana} name="Asana" />,
-        presupuesto: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="button"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            $2,500
-          </MDTypography>
-        ),
-        estado: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="caption"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            working
-          </MDTypography>
-        ),
-        finalización: <Progress color="info" value={60} />,
-        acción: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
-        ),
-      },
-      {
-        proyectos: <Project image={logoGithub} name="Github" />,
-        presupuesto: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="button"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            $5,000
-          </MDTypography>
-        ),
-        estado: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="caption"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            done
-          </MDTypography>
-        ),
-        finalización: <Progress color="success" value={100} />,
-        acción: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
-        ),
-      },
-      {
-        proyectos: <Project image={logoAtlassian} name="Atlassian" />,
-        presupuesto: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="button"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            $3,400
-          </MDTypography>
-        ),
-        estado: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="caption"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            canceled
-          </MDTypography>
-        ),
-        finalización: <Progress color="error" value={30} />,
-        acción: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
-        ),
-      },
-      {
-        proyectos: <Project image={logoSpotify} name="Spotify" />,
-        presupuesto: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="button"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            $14,000
-          </MDTypography>
-        ),
-        estado: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="caption"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            working
-          </MDTypography>
-        ),
-        finalización: <Progress color="info" value={80} />,
-        acción: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
-        ),
-      },
-      {
-        proyectos: <Project image={logoSlack} name="Slack" />,
-        presupuesto: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="button"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            $1,000
-          </MDTypography>
-        ),
-        estado: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="caption"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            canceled
-          </MDTypography>
-        ),
-        finalización: <Progress color="error" value={0} />,
-        acción: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
-        ),
-      },
-      {
-        proyectos: <Project image={logoInvesion} name="Invesion" />,
-        presupuesto: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="button"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            $2,300
-          </MDTypography>
-        ),
-        estado: (
-          <MDTypography
-            component="a"
-            href="#"
-            variant="caption"
-            color="text"
-            fontWeight="medium"
-            sx={{ fontSize: "1.2rem" }}
-          >
-            done
-          </MDTypography>
-        ),
-        finalización: <Progress color="success" value={100} />,
-        acción: (
-          <MDTypography component="a" href="#" color="text">
-            <Icon>more_vert</Icon>
-          </MDTypography>
-        ),
-      },
-    ],
+    rows, // Los datos obtenidos de la API
   };
 }
