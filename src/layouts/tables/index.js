@@ -35,8 +35,14 @@ const modalStyle = {
 };
 
 function Tables() {
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const handleOptionChange = (option) => {
+    setSelectedOption(option);
+  };
+
   // Datos de la tabla
-  const { columns: pColumns, rows: pRows } = projectsTableData();
+  const { columns: pColumns, rows: pRows } = projectsTableData({ selectedOption });
 
   // Estado para controlar la apertura del modal
   const [open, setOpen] = useState(false);
@@ -70,6 +76,7 @@ function Tables() {
 
   const paginationModel = { page: 0, pageSize: 10 };
 
+  console.log("select", selectedOption);
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -94,7 +101,7 @@ function Tables() {
                   <MDTypography variant="h3" color="white">
                     Activos en cartera
                   </MDTypography>
-                  <SelectSmall />
+                  <SelectSmall optionChange={handleOptionChange} />
                 </Box>
               </MDBox>
               <MDBox pt={3}>
@@ -114,6 +121,8 @@ function Tables() {
                     },
                   }}
                 />
+              </MDBox>
+              <MDBox mx={2} py={2} px={2}>
                 <Button
                   onClick={handleOpen}
                   variant="contained"
