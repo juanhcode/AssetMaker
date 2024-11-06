@@ -37,13 +37,6 @@ const modalStyle = {
 function Tables() {
   const [selectedOption, setSelectedOption] = useState("");
 
-  const handleOptionChange = (option) => {
-    setSelectedOption(option);
-  };
-
-  // Datos de la tabla
-  const { columns: pColumns, rows: pRows } = projectsTableData({ selectedOption });
-
   // Estado para controlar la apertura del modal
   const [open, setOpen] = useState(false);
 
@@ -53,6 +46,8 @@ function Tables() {
     symbol: "",
     price: "",
   });
+
+  const handleOptionChange = (option) => setSelectedOption(option);
 
   // Funciones para abrir y cerrar el modal
   const handleOpen = () => setOpen(true);
@@ -70,13 +65,14 @@ function Tables() {
   // Función para manejar el envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Nuevo activo agregado:", newAsset);
     handleClose();
   };
 
+  // Datos de la tabla
+  const { columns: pColumns, rows: pRows } = projectsTableData({ selectedOption });
+
   const paginationModel = { page: 0, pageSize: 10 };
 
-  console.log("select", selectedOption);
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -135,79 +131,6 @@ function Tables() {
           </Grid>
         </Grid>
       </MDBox>
-
-      {/* Modal para agregar un nuevo activo */}
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={modalStyle}>
-          <MDTypography
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-            sx={{ fontSize: "22px", fontWeight: "bold" }}
-          >
-            Agregar Nuevo Activo
-          </MDTypography>
-          <MDBox component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-            <TextField
-              fullWidth
-              label="Nombre del Activo"
-              name="name"
-              value={newAsset.name}
-              onChange={handleChange}
-              margin="normal"
-              sx={{ marginBottom: "15px" }}
-            />
-            <TextField
-              fullWidth
-              label="Símbolo del Activo"
-              name="symbol"
-              value={newAsset.symbol}
-              onChange={handleChange}
-              margin="normal"
-              sx={{ marginBottom: "15px" }}
-            />
-            <TextField
-              fullWidth
-              label="Precio"
-              name="price"
-              value={newAsset.price}
-              onChange={handleChange}
-              margin="normal"
-              sx={{ marginBottom: "15px" }}
-            />
-            <Button
-              onClick={handleClose}
-              variant="outlined"
-              sx={{
-                fontSize: "14px",
-                padding: "10px 20px",
-                color: "#FF5733",
-                borderColor: "#FF5733",
-                marginRight: "10px",
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{
-                fontSize: "14px",
-                padding: "10px 20px",
-                color: "#FFF",
-                borderColor: "#007BFF",
-              }}
-            >
-              Agregar
-            </Button>
-          </MDBox>
-        </Box>
-      </Modal>
 
       <Footer />
     </DashboardLayout>
