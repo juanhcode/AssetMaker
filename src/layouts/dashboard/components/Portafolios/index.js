@@ -45,7 +45,7 @@ function Portafolios() {
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     setIsLoading(true);
-    fetch("https://mocki.io/v1/86891c7a-3ddb-4438-98b3-ac6caff49f10")
+    fetch("")
       .then((response) => response.json())
       .then((data) => {
         setPortafolios(data);
