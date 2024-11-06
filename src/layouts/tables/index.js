@@ -37,13 +37,6 @@ const modalStyle = {
 function Tables() {
   const [selectedOption, setSelectedOption] = useState("");
 
-  const handleOptionChange = (option) => {
-    setSelectedOption(option);
-  };
-
-  // Datos de la tabla
-  const { columns: pColumns, rows: pRows } = projectsTableData({ selectedOption });
-
   // Estado para controlar la apertura del modal
   const [open, setOpen] = useState(false);
 
@@ -53,6 +46,8 @@ function Tables() {
     symbol: "",
     price: "",
   });
+
+  const handleOptionChange = (option) => setSelectedOption(option);
 
   // Funciones para abrir y cerrar el modal
   const handleOpen = () => setOpen(true);
@@ -70,13 +65,14 @@ function Tables() {
   // Función para manejar el envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Nuevo activo agregado:", newAsset);
     handleClose();
   };
 
+  // Datos de la tabla
+  const { columns: pColumns, rows: pRows } = projectsTableData({ selectedOption });
+
   const paginationModel = { page: 0, pageSize: 10 };
 
-  console.log("select", selectedOption);
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -148,7 +144,7 @@ function Tables() {
             id="modal-modal-title"
             variant="h6"
             component="h2"
-            sx={{ fontSize: "22px", fontWeight: "bold" }}
+            sx={{ fontSize: "22px", fontWeight: "bold", color: "dark" }}
           >
             Agregar Nuevo Activo
           </MDTypography>

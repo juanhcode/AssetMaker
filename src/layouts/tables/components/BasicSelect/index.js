@@ -5,24 +5,23 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import PropTypes from "prop-types";
 
-SelectSmall.propTypes = {
-  optionChange: PropTypes.func.isRequired,
-};
-
-export default function SelectSmall({ optionChange }) {
+function SelectSmall({ optionChange }) {
   const [tipo, setTipo] = React.useState("");
   const handleChange = (event) => {
+    setTipo(event.target.value);
     optionChange(event.target.value);
   };
 
   const inputLabelStyles = {
-    fontSize: "1.8rem",
+    fontSize: { xs: "1.3rem", sm: "1.5rem", md: "1.8rem" },
     color: "#FFFFFF",
   };
 
   const selectStyles = {
-    fontSize: "1.4rem",
+    fontSize: { xs: "1rem", sm: "1.2rem", md: "1.4rem" },
     color: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderRadius: "5px",
     "& .MuiOutlinedInput-notchedOutline": {
       borderColor: "rgba(255, 255, 255, 0.7)",
     },
@@ -31,10 +30,8 @@ export default function SelectSmall({ optionChange }) {
     },
     "& .MuiSelect-icon": {
       color: "rgba(255, 255, 255, 0.8)",
-      fontSize: "1.5rem",
+      fontSize: { xs: "1rem", sm: "1.3rem", md: "1.5rem" },
     },
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderRadius: "5px",
     "&:hover": {
       backgroundColor: "rgba(255, 255, 255, 0.2)",
     },
@@ -47,12 +44,19 @@ export default function SelectSmall({ optionChange }) {
   };
 
   const menuItemStyles = {
-    fontSize: "1.4rem",
-    color: "#333333",
+    fontSize: { xs: "1rem", sm: "1.2rem", md: "1.4rem" },
+    color: "dark",
   };
 
   return (
-    <FormControl sx={{ m: 1, minWidth: 100, marginLeft: 90 }} size="small">
+    <FormControl
+      sx={{
+        m: 1,
+        minWidth: { xs: 60, sm: 100, md: 100 },
+        marginLeft: { xs: 13, sm: 30, md: 95 },
+      }}
+      size="small"
+    >
       <InputLabel
         id="tipo-select-label"
         sx={{
@@ -67,7 +71,6 @@ export default function SelectSmall({ optionChange }) {
       <Select
         labelId="tipo-select-label"
         value={tipo}
-        defaultValue={10}
         label="Tipo"
         onChange={handleChange}
         sx={selectStyles}
@@ -82,3 +85,9 @@ export default function SelectSmall({ optionChange }) {
     </FormControl>
   );
 }
+
+SelectSmall.propTypes = {
+  optionChange: PropTypes.func.isRequired,
+};
+
+export default SelectSmall;

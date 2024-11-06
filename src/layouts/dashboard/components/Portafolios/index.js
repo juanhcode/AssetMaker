@@ -45,7 +45,7 @@ function Portafolios() {
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     setIsLoading(true);
-    fetch("https://mocki.io/v1/46312168-1549-4df7-96bc-2aff243f02ef")
+    fetch("https://mocki.io/v1/86891c7a-3ddb-4438-98b3-ac6caff49f10")
       .then((response) => response.json())
       .then((data) => {
         setPortafolios(data);
@@ -148,7 +148,6 @@ function Portafolios() {
                     }
                     action={{
                       type: "internal",
-                      route: `/portafolios/${portafolio.id}`,
                       color: "info",
                       label: "Ver Detalles",
                     }}
