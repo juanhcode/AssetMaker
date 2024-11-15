@@ -14,11 +14,23 @@ function Login() {
     e.preventDefault();
     setError(null);
     try {
-      const response = await fetch("https://mocki.io/v1/0b8ae42a-665e-49f6-9439-bf5ec935aa2f");
+      const response = await fetch("http://34.45.127.11:8082/rest/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      console.log("Login", response);
+
       if (!response.ok) {
         setError("No existe el usuario");
       }
+
       const user = await response.json();
+
+      // Si el inicio de sesión es exitoso, redirigir al dashboard
       if (user.email === email && user.password === password) {
         navigate("/dashboard");
       } else {

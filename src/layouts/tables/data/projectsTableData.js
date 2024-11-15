@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 // Images
@@ -146,9 +145,12 @@ function Data({ selectedOption }) {
 
   // useEffect para ejecutar fetchData cuando se cargue el componente
   useEffect(() => {
-    fetchData();
-    fetchNasdaqData();
-  }, []);
+    if (selectedOption === 10) {
+      fetchData(); // Llama a la API de criptomonedas cuando selectedOption es 10
+    } else if (selectedOption === 20) {
+      fetchNasdaqData(); // Llama a la API de NASDAQ cuando selectedOption es 20
+    }
+  }, [selectedOption]);
 
   const columns = [
     { field: "id", headerName: "#", width: 70 },
