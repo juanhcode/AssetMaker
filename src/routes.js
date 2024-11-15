@@ -25,7 +25,7 @@ const routes = [
   createCollapseRoute("Dashboard", "dashboard", "dashboard", "/dashboard", <Dashboard />),
   createCollapseRoute("Activos", "tables", "trending_up", "/tables", <Tables />),
   createCollapseRoute("Perfil", "profile", "person", "/profile", <Profile />),
-  { route: "/login", component: <Login /> },
+  { route: "/login", component: <Dashboard /> },
   { route: "/register", component: <Register /> },
 ];
 

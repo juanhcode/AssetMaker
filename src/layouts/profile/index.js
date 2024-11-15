@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
@@ -18,12 +18,53 @@ function Overview() {
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState({ update: false, delete: false });
   const [profileData, setProfileData] = useState({
-    Nombre: "Christian",
-    Móvil: "1234567890",
-    Email: "prueba@gmail.com",
-    Ubicación: "colombia",
-    Descripción: "Este es mi perfil",
+    Nombre: "",
+    Móvil: "",
+    Email: "",
+    Ubicación: "",
+    Descripción: "",
   });
+
+  useEffect(() => {
+    // Función para simular un timeout
+    const timeout = (ms) =>
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms));
+
+    const fetchUserData = async () => {
+      try {
+        const response = await Promise.race([
+          fetch("http://34.29.248.55:8082/users/4"), // Aquí va la URL de la API
+          timeout(3000), // Timeout en 3 segundos
+        ]);
+
+        if (!response.ok) {
+          throw new Error("Error al cargar los datos del usuario");
+        }
+
+        const data = await response.json();
+        setProfileData({
+          Nombre: data.first_name,
+          Móvil: data.phone || "1234567890",
+          Email: data.email,
+          Ubicación: data.location || "colombia",
+          Descripción: data.description || "Este es mi perfil",
+        });
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+
+        // Datos quemados en caso de error
+        setProfileData({
+          Nombre: "John Doe",
+          Móvil: "1234567890",
+          Email: "johndoe@example.com",
+          Ubicación: "Colombia",
+          Descripción: "Este es un perfil de muestra",
+        });
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleModal = (modal, state) => {
     setOpenModal((prev) => ({ ...prev, [modal]: state }));
