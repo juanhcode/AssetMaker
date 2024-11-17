@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@alpacahq/alpaca-trade-api": "^3.1.2",
     "@emotion/cache": "11.10.8",
     "@emotion/react": "11.10.8",
     "@emotion/styled": "11.10.8",
@@ -15,6 +16,7 @@
     "@testing-library/user-event": "^14.5.2",
     "asset-maker": "file:",
     "axios": "^1.7.7",
+    "bottleneck": "^2.19.5",
     "chart.js": "4.3.0",
     "chroma-js": "2.4.2",
     "classnames": "^2.5.1",
