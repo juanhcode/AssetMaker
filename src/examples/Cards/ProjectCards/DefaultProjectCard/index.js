@@ -151,7 +151,7 @@ DefaultProjectCard.propTypes = {
   description: PropTypes.string.isRequired,
   action: PropTypes.shape({
     type: PropTypes.oneOf(["external", "internal"]),
-    route: PropTypes.string.isRequired,
+    route: PropTypes.string,
     color: PropTypes.oneOf([
       "primary",
       "secondary",

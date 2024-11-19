@@ -21,12 +21,12 @@ const createCollapseRoute = (name, key, icon, route, component) => ({
 });
 
 const routes = [
-  { route: "/", component: <Home /> },
+  { route: "/", component: <Home />, key: "home" },
   createCollapseRoute("Dashboard", "dashboard", "dashboard", "/dashboard", <Dashboard />),
   createCollapseRoute("Activos", "tables", "trending_up", "/tables", <Tables />),
   createCollapseRoute("Perfil", "profile", "person", "/profile", <Profile />),
-  { route: "/login", component: <Dashboard /> },
-  { route: "/register", component: <Register /> },
+  { route: "/login", component: <Dashboard />, key: "login" },
+  { route: "/register", component: <Register />, key: "register" },
 ];
 
 export default routes;

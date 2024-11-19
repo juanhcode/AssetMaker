@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
+import { Modal, TextField, Button, Grid } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -16,13 +14,17 @@ import profilesListData from "layouts/profile/data/profilesListData";
 
 function Overview() {
   const navigate = useNavigate();
+  const theme = useTheme();
+
   const [openModal, setOpenModal] = useState({ update: false, delete: false });
   const [profileData, setProfileData] = useState({
     Nombre: "",
+    Apellido: "",
     Móvil: "",
     Email: "",
     Ubicación: "",
     Descripción: "",
+    Perfil_De_Riesgo: "",
   });
 
   useEffect(() => {
@@ -33,7 +35,7 @@ function Overview() {
     const fetchUserData = async () => {
       try {
         const response = await Promise.race([
-          fetch("http://34.29.248.55:8082/users/4"), // Aquí va la URL de la API
+          fetch("http://35.222.15.110:8082/users/4"), // Aquí va la URL de la API
           timeout(3000), // Timeout en 3 segundos
         ]);
 
@@ -44,21 +46,24 @@ function Overview() {
         const data = await response.json();
         setProfileData({
           Nombre: data.first_name,
+          Apellido: data.last_name,
           Móvil: data.phone || "1234567890",
           Email: data.email,
           Ubicación: data.location || "colombia",
           Descripción: data.description || "Este es mi perfil",
+          Perfil_De_Riesgo: data.risk_profile,
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
-
         // Datos quemados en caso de error
         setProfileData({
-          Nombre: "John Doe",
+          Nombre: "John",
+          Apellido: "Doe",
           Móvil: "1234567890",
           Email: "johndoe@example.com",
           Ubicación: "Colombia",
           Descripción: "Este es un perfil de muestra",
+          Perfil_De_Riesgo: "Moderado",
         });
       }
     };
@@ -73,16 +78,14 @@ function Overview() {
   const handleDelete = () => {
     setProfileData({
       Nombre: "",
+      Apellido: "",
       Móvil: "",
       Email: "",
       Ubicación: "",
       Descripción: "",
+      Perfil_De_Riesgo: "",
     });
     handleModal("delete", false);
-    handleLogout();
-  };
-
-  const handleLogout = () => {
     navigate("/");
   };
 
@@ -95,16 +98,36 @@ function Overview() {
     handleModal("update", false);
   };
 
+  const modalStyles = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    ...(theme.palette.mode === "light"
+      ? {
+          bgcolor: "background.paper", // Fondo claro para modo oscuro
+          color: theme.palette.text.primary, // Texto principal para modo oscuro
+        }
+      : {
+          bgcolor: "grey.900", // Fondo oscuro para modo claro
+          color: "white", // Texto blanco para fondo oscuro
+        }),
+    borderRadius: "16px",
+    boxShadow: theme.shadows[10],
+    p: 4,
+  };
+
+  const buttonStyles = {
+    fontSize: "1rem",
+    fontWeight: "bold",
+  };
+
   const textFieldProps = {
     fullWidth: true,
     margin: "normal",
+    color: "light",
     onChange: handleChange,
-    InputProps: {
-      sx: { fontSize: "1.2rem" },
-    },
-    InputLabelProps: {
-      sx: { fontSize: "1.2rem" },
-    },
   };
 
   return (
@@ -120,9 +143,11 @@ function Overview() {
                 description={profileData.Descripción}
                 info={{
                   Nombre: profileData.Nombre,
+                  Apellido: profileData.Apellido,
                   Móvil: profileData.Móvil,
                   Email: profileData.Email,
                   Ubicación: profileData.Ubicación,
+                  Perfil_De_Riesgo: profileData.Perfil_De_Riesgo,
                 }}
                 social={[]}
                 actions={[
@@ -153,24 +178,20 @@ function Overview() {
         onClose={() => handleModal("update", false)}
         aria-labelledby="modal-update-title"
       >
-        <MDBox
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            borderRadius: "8px",
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
+        <MDBox sx={modalStyles}>
           <MDTypography id="modal-update-title" variant="h4" component="h2" mb={2}>
             Actualizar Usuario
           </MDTypography>
           <MDBox component="form">
-            {["Nombre", "Móvil", "Email", "Ubicación", "Descripción"].map((field) => (
+            {[
+              "Nombre",
+              "Apellido",
+              "Móvil",
+              "Email",
+              "Ubicación",
+              "Descripción",
+              "Perfil Riesgo",
+            ].map((field) => (
               <TextField
                 key={field}
                 label={field}
@@ -181,15 +202,18 @@ function Overview() {
                 rows={field === "Descripción" ? 4 : 1}
               />
             ))}
-            <MDBox mt={2} display="flex" justifyContent="flex-end">
+            <MDBox mt={3} display="flex" justifyContent="space-between">
               <Button
                 onClick={() => handleModal("update", false)}
                 variant="outlined"
                 sx={{
-                  mr: 1,
-                  fontSize: "1rem",
-                  color: "#FF5733",
-                  borderColor: "#FF5733",
+                  ...buttonStyles,
+                  bgcolor: theme.palette.error.main,
+                  color: theme.palette.common.white,
+                  borderColor: theme.palette.error.main,
+                  "&:hover": {
+                    bgcolor: theme.palette.error.main,
+                  },
                 }}
               >
                 Cancelar
@@ -197,7 +221,14 @@ function Overview() {
               <Button
                 variant="contained"
                 onClick={handleSubmit}
-                sx={{ color: (theme) => theme.palette.common.white, fontSize: "1rem" }}
+                sx={{
+                  ...buttonStyles,
+                  bgcolor: theme.palette.success.state,
+                  color: theme.palette.common.white,
+                  "&:hover": {
+                    bgcolor: theme.palette.info.main,
+                  },
+                }}
               >
                 Guardar
               </Button>
@@ -212,37 +243,40 @@ function Overview() {
         onClose={() => handleModal("delete", false)}
         aria-labelledby="modal-delete-title"
       >
-        <MDBox
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            borderRadius: "8px",
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
+        <MDBox sx={modalStyles}>
           <MDTypography id="modal-delete-title" variant="h4" component="h2" mb={2}>
             Eliminar Usuario
           </MDTypography>
           <MDTypography id="modal-delete-description" variant="body1" mb={2}>
             ¿Estás seguro de que deseas eliminar tu perfil? Esta acción no se puede deshacer.
           </MDTypography>
-          <MDBox mt={2} display="flex" justifyContent="flex-end">
+          <MDBox mt={3} display="flex" justifyContent="space-between">
             <Button
               onClick={() => handleModal("delete", false)}
               variant="outlined"
-              sx={{ mr: 1, fontSize: "1rem", color: "#FF5733", borderColor: "#FF5733" }}
+              sx={{
+                ...buttonStyles,
+                bgcolor: theme.palette.error.main,
+                color: theme.palette.common.white,
+                borderColor: theme.palette.error.main,
+                "&:hover": {
+                  bgcolor: theme.palette.error.main,
+                },
+              }}
             >
               Cancelar
             </Button>
             <Button
               variant="contained"
               onClick={handleDelete}
-              sx={{ color: (theme) => theme.palette.common.white, fontSize: "1rem" }}
+              sx={{
+                ...buttonStyles,
+                bgcolor: theme.palette.error.main,
+                color: theme.palette.common.white,
+                "&:hover": {
+                  bgcolor: theme.palette.error.main,
+                },
+              }}
             >
               Eliminar
             </Button>

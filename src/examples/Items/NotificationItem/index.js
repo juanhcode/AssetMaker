@@ -30,7 +30,7 @@ const NotificationItem = forwardRef(({ icon, title, ...rest }, ref) => (
 // Typechecking props for the NotificationItem
 NotificationItem.propTypes = {
   icon: PropTypes.node.isRequired,
-  title: PropTypes.string.isRequired,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
 };
 
 export default NotificationItem;

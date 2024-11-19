@@ -1,77 +1,47 @@
 // Importaciones principales
-import { useState } from "react";
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
+import React, { useState, useEffect } from "react";
+import { CircularProgress, Grid, Card, Button, Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
-// Material Dashboard 2 React components
+// Componentes personalizados
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-
-// Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-
-// Data
 import projectsTableData from "layouts/tables/data/projectsTableData";
 import SelectSmall from "./components/BasicSelect";
 
-// Estilos para el modal
-const modalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
 function Tables() {
-  const [selectedOption, setSelectedOption] = useState("");
-
-  // Estado para controlar la apertura del modal
+  // Estados
+  const [selectedOption, setSelectedOption] = useState(null);
   const [open, setOpen] = useState(false);
+  const [pagina, setPagina] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  // Estados para el formulario de agregar activo
-  const [newAsset, setNewAsset] = useState({
-    name: "",
-    symbol: "",
-    price: "",
-  });
-
+  // Manejo de eventos
   const handleOptionChange = (option) => setSelectedOption(option);
-
-  // Funciones para abrir y cerrar el modal
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
 
-  // Manejar cambios en los inputs del formulario
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewAsset((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Función para manejar el envío del formulario
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    handleClose();
+  // Manejo de eventos para la paginación
+  const manejarCambioDePagina = (nuevaPagina) => {
+    setPagina(nuevaPagina); // Actualiza la página actual
+    setPaginationModel(nuevaPagina);
+    console.log("nueva pagina", pagina);
   };
 
   // Datos de la tabla
-  const { columns: pColumns, rows: pRows } = projectsTableData({ selectedOption });
+  const { columns: pColumns, rows: pRows } = projectsTableData({ selectedOption, pagina });
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
 
-  const paginationModel = { page: 0, pageSize: 10 };
+  // Carga los datos al montar
+  useEffect(() => {
+    // Activa el indicador de carga por 3 segundos
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false); // Desactiva el indicador después de 3 segundos
+    }, 3000);
+  }, [pagina, selectedOption]);
 
   return (
     <DashboardLayout>
@@ -101,22 +71,38 @@ function Tables() {
                 </Box>
               </MDBox>
               <MDBox pt={3}>
-                <DataGrid
-                  rows={pRows}
-                  columns={pColumns}
-                  pageSizeOptions={[5, 10]}
-                  initialState={{ pagination: { paginationModel } }}
-                  checkboxSelection
-                  disableRowSelectionOnClick
-                  sx={{
-                    "& .MuiDataGrid-cell": {
-                      fontSize: "1.2rem",
-                    },
-                    "& .MuiDataGrid-columnHeaders": {
-                      fontSize: "1.3rem",
-                    },
-                  }}
-                />
+                {loading ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "100%",
+                    }}
+                  >
+                    <CircularProgress />
+                  </div>
+                ) : (
+                  <DataGrid
+                    rows={pRows}
+                    columns={pColumns}
+                    onPaginationModelChange={manejarCambioDePagina}
+                    paginationMode="server"
+                    rowCount={100}
+                    pageSizeOptions={[5, 10]}
+                    initialState={{ pagination: { paginationModel } }}
+                    checkboxSelection
+                    disableRowSelectionOnClick
+                    sx={{
+                      "& .MuiDataGrid-cell": {
+                        fontSize: "1.2rem",
+                      },
+                      "& .MuiDataGrid-columnHeaders": {
+                        fontSize: "1.3rem",
+                      },
+                    }}
+                  />
+                )}
               </MDBox>
               <MDBox mx={2} py={2} px={2}>
                 <Button
@@ -136,5 +122,4 @@ function Tables() {
     </DashboardLayout>
   );
 }
-
 export default Tables;

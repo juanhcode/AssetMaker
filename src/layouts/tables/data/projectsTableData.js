@@ -35,7 +35,7 @@ const limiter = new Bottleneck({
 const cache = {};
 const dataCache = {};
 
-function Data({ selectedOption }) {
+function Data({ selectedOption, pagina }) {
   const [rows, setRows] = useState([]);
   const [rows2, setRows2] = useState([]);
 
@@ -58,23 +58,31 @@ function Data({ selectedOption }) {
       console.log(`Realizando petición a Alpaca para ${symbol}`);
       const response = await limiter.schedule(() =>
         fetch(
-          `https://data.alpaca.markets/v1beta3/crypto/us/bars?symbols=${symbol}&timeframe=1M&start=${startDate}&end=${endDate}&limit=1&sort=desc`,
+          `https://data.alpaca.markets/v1beta3/crypto/us/bars?symbols=${symbol}&timeframe=1D&start=${startDate}&end=${endDate}`,
           { headers }
         )
       );
       const data = await response.json();
-      const price = data.bars?.[symbol]?.[0]?.c ?? 0;
+      const prices = data.bars?.[symbol] || [];
 
-      cache[symbol] = price;
+      const priceData = {
+        prices: prices.map((bar) => bar.c),
+        min: Math.min(...prices.map((bar) => bar.l)),
+        max: Math.max(...prices.map((bar) => bar.h)),
+        initial: prices.length ? prices[0].o : 0,
+        final: prices.length ? prices[prices.length - 1].c : 0,
+      };
+
+      cache[symbol] = priceData;
 
       console.timeEnd(`${cacheKey}-fetch`);
-      return price;
+      return priceData;
     } catch (error) {
       console.error("Error fetching price:", error);
     }
   };
 
-  const fetchData = async (page = 0) => {
+  const fetchData = async (page) => {
     try {
       if (dataCache[page]) {
         setRows(dataCache[page]);
@@ -93,18 +101,21 @@ function Data({ selectedOption }) {
       const end = start + 10;
       const currentPageData = data.slice(start, end);
 
-      // Solo hacer peticiones para los elementos del slice
       const formattedData = await Promise.all(
         currentPageData.map(async (item) => {
-          const price = await fetchPriceOfCrypto(item.symbol);
+          const priceData = await fetchPriceOfCrypto(item.symbol);
+
+          const monthlyReturn = ((priceData.final - priceData.initial) / priceData.initial) * 100;
+          const monthlyRisk = calculateStandardDeviation(priceData.prices);
+
           return {
             currency: item.symbol,
             name: item.name.split("/")[0].trim(),
-            price: price || 0,
-            monthlyReturn: (Math.random() * 5).toFixed(2),
-            monthlyRisk: (Math.random() * 5).toFixed(2),
-            minReturn: (Math.random() * 3).toFixed(2),
-            maxReturn: (Math.random() * 8).toFixed(2),
+            price: priceData.final || 0,
+            monthlyReturn: monthlyReturn.toFixed(2),
+            monthlyRisk: monthlyRisk.toFixed(2),
+            minReturn: priceData.min.toFixed(2),
+            maxReturn: priceData.max.toFixed(2),
           };
         })
       );
@@ -123,11 +134,17 @@ function Data({ selectedOption }) {
     }
   };
 
+  const calculateStandardDeviation = (values) => {
+    if (values.length === 0) return 0;
+    const mean = values.reduce((acc, val) => acc + val, 0) / values.length;
+    const squaredDiffs = values.map((val) => Math.pow(val - mean, 2));
+    const avgSquaredDiff = squaredDiffs.reduce((acc, val) => acc + val, 0) / values.length;
+    return Math.sqrt(avgSquaredDiff);
+  };
+
   useEffect(() => {
-    if (selectedOption === 10) {
-      fetchData();
-    }
-  }, [selectedOption]);
+    fetchData(pagina.page || 0);
+  }, [pagina]);
 
   const columns = [
     { field: "id", headerName: "#", width: 70 },
