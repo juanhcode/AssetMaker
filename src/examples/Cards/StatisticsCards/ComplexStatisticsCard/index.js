@@ -78,8 +78,13 @@ ComplexStatisticsCard.propTypes = {
     "light",
     "dark",
   ]),
-  title: PropTypes.string.isRequired,
-  count: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
+  count: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.object,
+    PropTypes.array,
+  ]).isRequired,
   percentage: PropTypes.shape({
     color: PropTypes.oneOf([
       "primary",
@@ -92,7 +97,7 @@ ComplexStatisticsCard.propTypes = {
       "white",
     ]),
     amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    label: PropTypes.string,
+    label: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   }),
   icon: PropTypes.node.isRequired,
 };

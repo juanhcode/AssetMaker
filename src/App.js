@@ -12,15 +12,18 @@ import routes from "routes";
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
 import logo from "assets/images/Logo.png";
 import GlobalStyle from "../src/assets/styles/GlobalStyle";
+import PropTypes from "prop-types";
 
 const getRoutes = (allRoutes) =>
-  allRoutes.map((route) =>
+  allRoutes.flatMap((route) =>
     route.collapse
       ? getRoutes(route.collapse)
-      : route.route && <Route exact path={route.route} element={route.component} key={route.key} />
+      : route.route
+      ? [<Route exact path={route.route} element={route.component} key={route.key} />]
+      : []
   );
 
-const ConfiguratorButton = (onClick) => (
+const ConfiguratorButton = ({ onClick }) => (
   <MDBox
     display="flex"
     justifyContent="center"
@@ -43,6 +46,10 @@ const ConfiguratorButton = (onClick) => (
     </Icon>
   </MDBox>
 );
+
+ConfiguratorButton.propTypes = {
+  onClick: PropTypes.func.isRequired,
+};
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();

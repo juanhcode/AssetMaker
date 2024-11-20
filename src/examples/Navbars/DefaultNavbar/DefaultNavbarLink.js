@@ -46,7 +46,7 @@ function DefaultNavbarLink({ icon, name, route, light }) {
 // Typechecking props for the DefaultNavbarLink
 DefaultNavbarLink.propTypes = {
   icon: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
+  name: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
   route: PropTypes.string.isRequired,
   light: PropTypes.bool.isRequired,
 };

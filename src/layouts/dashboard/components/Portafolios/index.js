@@ -1,237 +1,243 @@
-import { useState, useEffect } from "react";
-import Card from "@mui/material/Card";
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import TextField from "@mui/material/TextField";
-import CircularProgress from "@mui/material/CircularProgress";
+import React, { useState, useEffect } from "react";
+import { useTheme } from "@mui/material/styles";
+import {
+  Card,
+  Grid,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  CircularProgress,
+  IconButton,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
 import homeDecor1 from "assets/images/home-decor-1.jpg";
 import homeDecor2 from "assets/images/home-decor-2.jpg";
-import homeDecor3 from "assets/images/home-decor-3.jpg";
-import homeDecor4 from "assets/images/home-decor-4.jpeg";
 
-const inicialPortafoliosData = [
+const initialPortfolios = [
   {
     id: 1,
     name: "Portafolio 1",
-    assetType: "Acciones",
-    return: "8%",
+    description: "Portafolio inicial",
+    averageAnnualReturn: 8.5,
+    portfolioPerformance: 20.0,
+    standardDeviation: 12.0,
+    idUser: 1,
     image: homeDecor1,
   },
   {
     id: 2,
     name: "Portafolio 2",
-    assetType: "Bonos",
-    return: "5%",
+    description: "Otro portafolio",
+    averageAnnualReturn: 6.3,
+    portfolioPerformance: 15.2,
+    standardDeviation: 10.0,
+    idUser: 2,
     image: homeDecor2,
   },
 ];
 
-function Portafolios() {
-  const [portafolios, setPortafolios] = useState(inicialPortafoliosData);
+const initialNewPortfolio = {
+  name: "",
+  description: "",
+  averageAnnualReturn: "",
+  portfolioPerformance: "",
+  standardDeviation: "",
+  idUser: "",
+  image: null,
+};
+
+const buttonStyles = {
+  fontSize: "1rem",
+  fontWeight: "bold",
+};
+
+function Portfolios() {
+  const theme = useTheme();
+  const [portfolios, setPortfolios] = useState(initialPortfolios);
   const [open, setOpen] = useState(false);
-  const [newPortafolio, setNewPortafolio] = useState({
-    name: "",
-    assetType: "",
-    return: "",
-    image: null,
-  });
   const [isLoading, setIsLoading] = useState(true);
+  const [newPortfolio, setNewPortfolio] = useState(initialNewPortfolio);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentPortfolioId, setCurrentPortfolioId] = useState(null);
+
   useEffect(() => {
-    setIsLoading(true);
-    fetch("")
-      .then((response) => response.json())
-      .then((data) => {
-        setPortafolios(data);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error al obtener los portafolios:", error);
-        setIsLoading(false);
-      });
+    // Simular carga inicial
+    setTimeout(() => setIsLoading(false), 1000);
   }, []);
 
-  const handleOpen = () => {
+  const handleOpen = (portfolioId = null) => {
+    if (portfolioId !== null) {
+      // Modo edición
+      const portfolioToEdit = portfolios.find((p) => p.id === portfolioId);
+      setNewPortfolio(portfolioToEdit);
+      setIsEditing(true);
+      setCurrentPortfolioId(portfolioId);
+    } else {
+      // Modo creación
+      setNewPortfolio(initialNewPortfolio);
+      setIsEditing(false);
+    }
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
+    setNewPortfolio(initialNewPortfolio);
+    setIsEditing(false);
+    setCurrentPortfolioId(null);
   };
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewPortafolio({ ...newPortafolio, [name]: value });
+
+  const handleChange = ({ target: { name, value } }) => {
+    setNewPortfolio((prev) => ({ ...prev, [name]: value }));
   };
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+
+  const handleImageChange = ({ target }) => {
+    const file = target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => {
-        setNewPortafolio({ ...newPortafolio, image: event.target.result });
+      reader.onload = ({ target: { result } }) => {
+        setNewPortfolio((prev) => ({ ...prev, image: result }));
       };
       reader.readAsDataURL(file);
     }
   };
-  const handleAddPortafolio = () => {
-    const newPortafolioWithId = {
-      ...newPortafolio,
-      id: portafolios.length + 1,
+
+  const handleAddPortfolio = () => {
+    const newPortfolioWithId = {
+      ...newPortfolio,
+      id: portfolios.length + 1,
     };
-    setPortafolios((prevPortafolios) => [...portafolios, newPortafolioWithId]);
-    setNewPortafolio({ name: "", assetType: "", return: "", image: null });
+    setPortfolios([...portfolios, newPortfolioWithId]);
+    handleClose();
+  };
+
+  const handleEditPortfolio = () => {
+    const updatedPortfolios = portfolios.map((portfolio) =>
+      portfolio.id === currentPortfolioId ? { ...portfolio, ...newPortfolio } : portfolio
+    );
+    setPortfolios(updatedPortfolios);
     handleClose();
   };
 
   return (
     <Card>
       <MDBox p={2}>
-        <MDTypography variant="h6" fontWeight="medium" style={{ fontSize: "1.5rem" }}>
+        <MDTypography variant="h6" fontWeight="medium" sx={{ fontSize: "1.5rem" }}>
           Mis Portafolios de Inversión
         </MDTypography>
-        <MDBox pt={2} px={2} lineHeight={1.25}>
-          <MDBox mb={1}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleOpen}
-              sx={{
-                padding: "5px 10px",
-                fontSize: "10px",
-                fontWeight: "bold",
-                borderRadius: "8px",
-                color: (theme) => theme.palette.common.white,
-              }}
-            >
-              Agregar Nuevo Portafolio
-            </Button>
-          </MDBox>
+        <MDBox pt={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleOpen()}
+            sx={{
+              padding: "5px 10px",
+              borderRadius: "8px",
+              color: theme.palette.common.white,
+              ...buttonStyles,
+            }}
+          >
+            Crear Nuevo Portafolio
+          </Button>
         </MDBox>
-        <MDBox
-          sx={{
-            maxHeight: "600px",
-            overflowY: "auto",
-            padding: 2,
-          }}
-        >
+        <MDBox sx={{ maxHeight: "600px", overflowY: "auto", padding: 2 }}>
           {isLoading ? (
             <MDBox display="flex" justifyContent="center" alignItems="center" height="300px">
               <CircularProgress />
             </MDBox>
           ) : (
-            <Grid container spacing={6}>
-              {portafolios.map((portafolio) => (
-                <Grid item xs={12} sm={6} md={6} xl={3} key={portafolio.id}>
+            <Grid container spacing={2}>
+              {portfolios.map((portfolio) => (
+                <Grid item xs={12} sm={6} md={6} xl={3} key={portfolio.id}>
                   <DefaultProjectCard
-                    image={portafolio.image}
-                    label={
-                      <MDTypography variant="body1" style={{ fontSize: "1.2rem" }}>
-                        {portafolio.assetType}
-                      </MDTypography>
-                    }
-                    title={
-                      <MDTypography
-                        variant="body1"
-                        style={{ fontSize: "1.5rem", fontWeight: "bold" }}
-                      >
-                        {portafolio.name}
-                      </MDTypography>
-                    }
-                    description={
-                      <MDTypography variant="body1" style={{ fontSize: "1.1rem" }}>
-                        Rendimiento: {portafolio.return}
-                      </MDTypography>
-                    }
+                    image={portfolio.image}
+                    label={portfolio.description}
+                    title={portfolio.name}
+                    description={`Retorno: ${portfolio.averageAnnualReturn}% | Rendimiento: ${portfolio.portfolioPerformance}% | Desviación: ${portfolio.standardDeviation}%`}
                     action={{
                       type: "internal",
                       color: "info",
                       label: "Ver Detalles",
                     }}
                   />
+                  <IconButton
+                    color="primary"
+                    onClick={() => handleOpen(portfolio.id)}
+                    sx={{ marginTop: 1 }}
+                  >
+                    <EditIcon />
+                  </IconButton>
                 </Grid>
               ))}
             </Grid>
           )}
         </MDBox>
       </MDBox>
-
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle variant="h4">Agregar Nuevo Portafolio</DialogTitle>
+        <DialogTitle>{isEditing ? "Editar Portafolio" : "Crear Nuevo Portafolio"}</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            name="name"
-            label="Nombre del Portafolio"
-            type="text"
-            fullWidth
-            value={newPortafolio.name}
-            onChange={handleChange}
-            InputProps={{
-              sx: { fontSize: "1.2rem" },
-            }}
-            InputLabelProps={{
-              sx: { fontSize: "1.2rem" },
-            }}
-          />
-          <TextField
-            margin="dense"
-            name="assetType"
-            label="Tipo de Activo"
-            type="text"
-            fullWidth
-            value={newPortafolio.assetType}
-            onChange={handleChange}
-            InputProps={{
-              sx: { fontSize: "1.2rem" },
-            }}
-            InputLabelProps={{
-              sx: { fontSize: "1.2rem" },
-            }}
-          />
-          <TextField
-            margin="dense"
-            name="return"
-            label="Rendimiento (%)"
-            type="text"
-            fullWidth
-            value={newPortafolio.return}
-            onChange={handleChange}
-            InputProps={{
-              sx: { fontSize: "1.2rem" },
-            }}
-            InputLabelProps={{
-              sx: { fontSize: "1.2rem" },
-            }}
-          />
+          {[
+            { label: "Nombre del Portafolio", name: "name" },
+            { label: "Descripción", name: "description" },
+            { label: "Retorno Anual Promedio (%)", name: "averageAnnualReturn" },
+            { label: "Rendimiento del Portafolio (%)", name: "portfolioPerformance" },
+            { label: "Desviación Estándar (%)", name: "standardDeviation" },
+          ].map(({ label, name }) => (
+            <TextField
+              key={name}
+              margin="dense"
+              name={name}
+              label={label}
+              type="text"
+              fullWidth
+              value={newPortfolio[name]}
+              onChange={handleChange}
+            />
+          ))}
           <TextField
             accept="image/*"
             type="file"
             onChange={handleImageChange}
-            style={{ marginTop: "16px" }}
-            InputProps={{
-              sx: { fontSize: "1.2rem" },
-            }}
+            fullWidth
+            margin="dense"
           />
         </DialogContent>
+
         <DialogActions>
           <Button
             onClick={handleClose}
             variant="outlined"
-            style={{ fontSize: "1rem", color: "#FF5733", borderColor: "#FF5733" }}
+            sx={{
+              ...buttonStyles,
+              bgcolor: theme.palette.error.main,
+              color: theme.palette.common.white,
+              borderColor: theme.palette.error.main,
+              "&:hover": {
+                bgcolor: theme.palette.error.main,
+              },
+            }}
           >
             Cancelar
           </Button>
           <Button
-            onClick={handleAddPortafolio}
+            onClick={isEditing ? handleEditPortfolio : handleAddPortfolio}
             variant="contained"
-            style={{ fontSize: "1rem", color: "#FFF" }}
+            sx={{
+              ...buttonStyles,
+              bgcolor: theme.palette.success.state,
+              color: theme.palette.common.white,
+              "&:hover": {
+                bgcolor: theme.palette.info.main,
+              },
+            }}
           >
-            Agregar
+            {isEditing ? "Guardar Cambios" : "Crear Portafolio"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -239,4 +245,4 @@ function Portafolios() {
   );
 }
 
-export default Portafolios;
+export default Portfolios;

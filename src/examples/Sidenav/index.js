@@ -157,7 +157,7 @@ Sidenav.defaultProps = {
 Sidenav.propTypes = {
   color: PropTypes.oneOf(["primary", "secondary", "info", "success", "warning", "error", "dark"]),
   brand: PropTypes.string,
-  brandName: PropTypes.string.isRequired,
+  brandName: PropTypes.node.isRequired,
   routes: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 

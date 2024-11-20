@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-
-// Images
+import Bottleneck from "bottleneck";
 import logoBtc from "assets/images/small-logos/bitcoin-btc-logo.png";
 import logoLtc from "assets/images/small-logos/litecoin-ltc-logo.png";
 import logoSol from "assets/images/small-logos/solana-sol-logo.png";
@@ -12,7 +11,6 @@ import logoMkr from "assets/images/small-logos/maker-mkr-logo.png";
 import logoBch from "assets/images/small-logos/bitcoin-cash-bch-logo.png";
 import defaultLogo from "assets/images/small-logos/nasdaq-logo.png";
 
-// Asocia cada símbolo de criptomoneda con su logo correspondiente
 const logos = {
   BTC: logoBtc,
   BCH: logoBch,
@@ -29,128 +27,124 @@ const headers = {
   "Apca-Api-Secret-Key": "UTTc5XPc8J8qIpRVHTLmzi5ZIg30xsgy0yipL9b3",
 };
 
-function Data({ selectedOption }) {
+const limiter = new Bottleneck({
+  maxConcurrent: 1,
+  minTime: 300,
+});
+
+const cache = {};
+const dataCache = {};
+
+function Data({ selectedOption, pagina }) {
   const [rows, setRows] = useState([]);
   const [rows2, setRows2] = useState([]);
 
-  // Función asíncrona para obtener datos de la API
-  const fetchData = async () => {
+  const fetchPriceOfCrypto = async (symbol) => {
+    const cacheKey = `cache-${symbol}`;
+
     try {
+      if (cache[symbol]) {
+        console.time(`${cacheKey}-cache`);
+        console.log(`Usando caché para ${symbol}`);
+        console.timeEnd(`${cacheKey}-cache`);
+        return cache[symbol];
+      }
+
+      const now = new Date();
+      const endDate = now.toISOString().split("T")[0];
+      const startDate = new Date(now.setMonth(now.getMonth() - 1)).toISOString().split("T")[0];
+
+      console.time(`${cacheKey}-fetch`);
+      console.log(`Realizando petición a Alpaca para ${symbol}`);
+      const response = await limiter.schedule(() =>
+        fetch(
+          `https://data.alpaca.markets/v1beta3/crypto/us/bars?symbols=${symbol}&timeframe=1D&start=${startDate}&end=${endDate}`,
+          { headers }
+        )
+      );
+      const data = await response.json();
+      const prices = data.bars?.[symbol] || [];
+
+      const priceData = {
+        prices: prices.map((bar) => bar.c),
+        min: Math.min(...prices.map((bar) => bar.l)),
+        max: Math.max(...prices.map((bar) => bar.h)),
+        initial: prices.length ? prices[0].o : 0,
+        final: prices.length ? prices[prices.length - 1].c : 0,
+      };
+
+      cache[symbol] = priceData;
+
+      console.timeEnd(`${cacheKey}-fetch`);
+      return priceData;
+    } catch (error) {
+      console.error("Error fetching price:", error);
+    }
+  };
+
+  const fetchData = async (page) => {
+    try {
+      if (dataCache[page]) {
+        setRows(dataCache[page]);
+        return;
+      }
+
+      console.time("fetchData");
+
       const response = await fetch(
         "https://paper-api.alpaca.markets/v2/assets?status=active&asset_class=crypto",
         { headers }
       );
       const data = await response.json();
 
-      // Mapear y obtener el precio de cada activo
+      const start = page * 10;
+      const end = start + 10;
+      const currentPageData = data.slice(start, end);
+
       const formattedData = await Promise.all(
-        data.map(async (item) => {
-          const price = await fetchPriceOfCrypto(item.symbol);
+        currentPageData.map(async (item) => {
+          const priceData = await fetchPriceOfCrypto(item.symbol);
+
+          const monthlyReturn = ((priceData.final - priceData.initial) / priceData.initial) * 100;
+          const monthlyRisk = calculateStandardDeviation(priceData.prices);
+
           return {
             currency: item.symbol,
             name: item.name.split("/")[0].trim(),
-            price: price || 0,
-            monthlyReturn: (Math.random() * 5).toFixed(2),
-            monthlyRisk: (Math.random() * 5).toFixed(2),
-            minReturn: (Math.random() * 3).toFixed(2),
-            maxReturn: (Math.random() * 8).toFixed(2),
+            price: priceData.final || 0,
+            monthlyReturn: monthlyReturn.toFixed(2),
+            monthlyRisk: monthlyRisk.toFixed(2),
+            minReturn: priceData.min.toFixed(2),
+            maxReturn: priceData.max.toFixed(2),
           };
         })
       );
-      // Ordenar los datos por precio de mayor a menor, limitar a 20 resultados y asignar el ID en base al orden posterior.
+
       const sortedDataWithIds = formattedData
         .sort((a, b) => b.price - a.price)
-        //.slice(0, 20)
         .map((item, index) => ({ ...item, id: (index + 1).toString() }));
+
+      dataCache[page] = sortedDataWithIds;
 
       setRows(sortedDataWithIds);
+
+      console.timeEnd("fetchData");
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  const fetchPriceOfCrypto = async (symbol) => {
-    try {
-      const now = new Date(); // Obtiene la fecha y hora actuales
-      const endDate = now.toISOString().split("T")[0]; // Convierte la fecha actual a formato "YYYY-MM-DD"
-      const startDate = new Date(now.setMonth(now.getMonth() - 1)).toISOString().split("T")[0]; // Un mes atrás
-
-      const response = await fetch(
-        `https://data.alpaca.markets/v1beta3/crypto/us/bars?symbols=${symbol}&timeframe=1M&start=${startDate}&end=${endDate}&limit=1&sort=desc`,
-        /*`https://data.alpaca.markets/v1beta3/crypto/us/bars?symbols=${symbol.split("/")[0]}%2F${
-          symbol.split("/")[1]
-        }&timeframe=1M&start=${startDate}&end=${endDate}&limit=1&sort=desc`,*/
-        { headers }
-      );
-      const data = await response.json();
-      return data.bars?.[symbol]?.[0]?.c ?? 0;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+  const calculateStandardDeviation = (values) => {
+    if (values.length === 0) return 0;
+    const mean = values.reduce((acc, val) => acc + val, 0) / values.length;
+    const squaredDiffs = values.map((val) => Math.pow(val - mean, 2));
+    const avgSquaredDiff = squaredDiffs.reduce((acc, val) => acc + val, 0) / values.length;
+    return Math.sqrt(avgSquaredDiff);
   };
 
-  // Función asíncrona para obtener datos de NASDAQ
-  const fetchNasdaqData = async () => {
-    try {
-      const response = await fetch(
-        "https://paper-api.alpaca.markets/v2/assets?status=active&asset_class=us_equity&exchange=NASDAQ&attributes=",
-        { headers }
-      );
-      const data = await response.json();
-      // Mapear y obtener el precio de cada activo
-      const formattedData = await Promise.all(
-        data.map(async (item) => {
-          const price = await fetchPriceOfNasdaq(item.symbol);
-          return {
-            currency: item.symbol,
-            price: price || 0,
-            monthlyReturn: (Math.random() * 5).toFixed(2),
-            monthlyRisk: (Math.random() * 5).toFixed(2),
-            minReturn: (Math.random() * 3).toFixed(2),
-            maxReturn: (Math.random() * 8).toFixed(2),
-          };
-        })
-      );
-      // Ordenar los datos por precio de mayor a menor, limitar a 20 resultados y asignar el ID en base al orden posterior.
-      const sortedDataWithIds = formattedData
-        .sort((a, b) => b.price - a.price)
-        //.slice(0, 20)
-        .map((item, index) => ({ ...item, id: (index + 1).toString() }));
-
-      setRows2(sortedDataWithIds);
-    } catch (error) {
-      console.error("Error fetching NASDAQ data:", error);
-    }
-  };
-
-  const fetchPriceOfNasdaq = async (symbol) => {
-    try {
-      const now = new Date(); // Obtiene la fecha y hora actuales
-      const endDate = now.toISOString().split("T")[0]; // Convierte la fecha actual a formato "YYYY-MM-DD"
-      const startDate = new Date(now.setMonth(now.getMonth() - 1)).toISOString().split("T")[0]; // Un mes atrás
-
-      const response = await fetch(
-        `https://data.alpaca.markets/v2/stocks/bars?symbols=${symbol}&timeframe=1M&start=${startDate}&end=${endDate}&limit=10&adjustment=raw&feed=iex&sort=desc`,
-        //`https://data.alpaca.markets/v2/stocks/bars?symbols=AAPL&timeframe=1M&start=2024-10-01&end=2024-11-01&limit=10&adjustment=raw&feed=iex&sort=desc`,
-        { headers }
-      );
-      const data = await response.json();
-      const recentPrice = data.bars?.[symbol]?.[0]?.c ?? 0;
-      console.log("Precio nasdaq", recentPrice);
-      return recentPrice;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  // useEffect para ejecutar fetchData cuando se cargue el componente
   useEffect(() => {
-    if (selectedOption === 10) {
-      fetchData(); // Llama a la API de criptomonedas cuando selectedOption es 10
-    } else if (selectedOption === 20) {
-      fetchNasdaqData(); // Llama a la API de NASDAQ cuando selectedOption es 20
-    }
-  }, [selectedOption]);
+    fetchData(pagina.page || 0);
+  }, [pagina]);
 
   const columns = [
     { field: "id", headerName: "#", width: 70 },
