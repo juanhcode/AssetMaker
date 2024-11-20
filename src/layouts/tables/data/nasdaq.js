@@ -1,53 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Bottleneck from "bottleneck";
-import logoBtc from "assets/images/small-logos/bitcoin-btc-logo.png";
-import logoLtc from "assets/images/small-logos/litecoin-ltc-logo.png";
-import logoSol from "assets/images/small-logos/solana-sol-logo.png";
-import logoBnb from "assets/images/small-logos/bnb-bnb-logo.png";
-import logoYfi from "assets/images/small-logos/yearn-finance-yfi-logo.png";
-import logoEth from "assets/images/small-logos/ethereum-eth-logo.png";
-import logoMkr from "assets/images/small-logos/maker-mkr-logo.png";
-import logoBch from "assets/images/small-logos/bitcoin-cash-bch-logo.png";
-import logoUni from "assets/images/small-logos/uniswap-uni-logo.png";
-import logoSushi from "assets/images/small-logos/sushiswap-sushi-logo.png";
-import logoGrt from "assets/images/small-logos/the-graph-grt-logo.png";
-import logoXtz from "assets/images/small-logos/tezos-xtz-logo.png";
-import logoUsdt from "assets/images/small-logos/tether-usdt-logo.png";
-import logoDoge from "assets/images/small-logos/dogecoin-doge-logo.png";
-import logoDot from "assets/images/small-logos/polkadot-new-dot-logo.png";
-import logoLink from "assets/images/small-logos/chainlink-link-logo.png";
-import logoCrv from "assets/images/small-logos/curve-dao-token-crv-logo.png";
-import logoShib from "assets/images/small-logos/shiba-inu-shib-logo.png";
-import logoAvax from "assets/images/small-logos/avalanche-avax-logo.png";
-import logoBat from "assets/images/small-logos/basic-attention-token-bat-logo.png";
-import logoAave from "assets/images/small-logos/aave-aave-logo.png";
-import logoUsdc from "assets/images/small-logos/usd-coin-usdc-logo.png";
-
-const logos = {
-  BTC: logoBtc,
-  BCH: logoBch,
-  LTC: logoLtc,
-  SOL: logoSol,
-  BNB: logoBnb,
-  YFI: logoYfi,
-  ETH: logoEth,
-  MKR: logoMkr,
-  UNI: logoUni,
-  SUSHI: logoSushi,
-  GRT: logoGrt,
-  XTZ: logoXtz,
-  USDT: logoUsdt,
-  DOGE: logoDoge,
-  DOT: logoDot,
-  LINK: logoLink,
-  CRV: logoCrv,
-  SHIB: logoShib,
-  AAVE: logoAave,
-  AVAX: logoAvax,
-  BAT: logoBat,
-  USDC: logoUsdc,
-};
+import defaultLogo from "assets/images/small-logos/nasdaq-logo.png";
 
 const headers = {
   "Apca-Api-Key-Id": "PK6NYSR7W1ZRXWLX2NC9",
@@ -62,10 +16,10 @@ const limiter = new Bottleneck({
 const cache = {};
 const dataCache = {};
 
-function Data({ selectedOption, pagina }) {
+function Data({ pagina }) {
   const [rows, setRows] = useState([]);
 
-  const fetchPriceOfCrypto = async (symbol) => {
+  const fetchPriceOfNasdaq = async (symbol) => {
     const cacheKey = `cache-${symbol}`;
 
     try {
@@ -84,7 +38,8 @@ function Data({ selectedOption, pagina }) {
       console.log(`Realizando petición a Alpaca para ${symbol}`);
       const response = await limiter.schedule(() =>
         fetch(
-          `https://data.alpaca.markets/v1beta3/crypto/us/bars?symbols=${symbol}&timeframe=1D&start=${startDate}&end=${endDate}&sort=desc`,
+          //
+          `https://data.alpaca.markets/v2/stocks/bars?symbols=${symbol}&timeframe=1D&start=${startDate}&end=${endDate}&limit=10&adjustment=raw&feed=iex&sort=desc`,
           { headers }
         )
       );
@@ -108,17 +63,18 @@ function Data({ selectedOption, pagina }) {
     }
   };
 
-  const fetchData = async (page) => {
+  const fetchDataNasdaq = async (page) => {
     try {
       if (dataCache[page]) {
         setRows(dataCache[page]);
         return;
       }
 
-      console.time("fetchData");
+      console.time("fetchDataNasdaq");
 
       const response = await fetch(
-        "https://paper-api.alpaca.markets/v2/assets?status=active&asset_class=crypto",
+        //https://paper-api.alpaca.markets/v2/assets?status=active&asset_class=us_equity&exchange=NASDAQ&attributes=
+        "https://paper-api.alpaca.markets/v2/assets?status=active&asset_class=us_equity&exchange=NASDAQ",
         { headers }
       );
       const data = await response.json();
@@ -129,14 +85,17 @@ function Data({ selectedOption, pagina }) {
 
       const formattedData = await Promise.all(
         currentPageData.map(async (item) => {
-          const priceData = await fetchPriceOfCrypto(item.symbol);
+          const priceData = await fetchPriceOfNasdaq(item.symbol);
 
-          const monthlyReturn = ((priceData.final - priceData.initial) / priceData.initial) * 100;
+          const monthlyReturn =
+            priceData.initial !== 0
+              ? ((priceData.final - priceData.initial) / priceData.initial) * 100
+              : 0;
+
           const monthlyRisk = calculateStandardDeviation(priceData.prices);
 
           return {
             currency: item.symbol,
-            name: item.name.split("/")[0].trim(),
             price: priceData.final || 0,
             monthlyReturn: monthlyReturn.toFixed(2),
             monthlyRisk: monthlyRisk.toFixed(2),
@@ -154,7 +113,7 @@ function Data({ selectedOption, pagina }) {
 
       setRows(sortedDataWithIds);
 
-      console.timeEnd("fetchData");
+      console.timeEnd("fetchDataNasdaq");
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -169,19 +128,19 @@ function Data({ selectedOption, pagina }) {
   };
 
   useEffect(() => {
-    fetchData(pagina.page || 0);
+    fetchDataNasdaq(pagina.page || 0);
   }, [pagina]);
 
   const columns = [
     { field: "id", headerName: "#", width: 70 },
     {
       field: "currency",
-      headerName: "Moneda",
+      headerName: "Acciones",
       width: 130,
       renderCell: (params) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <img
-            src={logos[params.row.currency.split("/")[0]] || ""}
+            src={defaultLogo}
             alt={params.row.currency}
             style={{ width: 24, height: 24, marginRight: 8 }}
           />
@@ -189,7 +148,6 @@ function Data({ selectedOption, pagina }) {
         </div>
       ),
     },
-    { field: "name", headerName: "Nombre", width: 130 },
     { field: "price", headerName: "Precio", type: "number", width: 100 },
     { field: "monthlyReturn", headerName: "Rendimiento mensual", type: "number", width: 150 },
     { field: "monthlyRisk", headerName: "Riesgo mensual", type: "number", width: 130 },
@@ -201,7 +159,6 @@ function Data({ selectedOption, pagina }) {
 }
 
 Data.propTypes = {
-  selectedOption: PropTypes.func.isRequired,
   pagina: PropTypes.object.isRequired,
 };
 

@@ -58,8 +58,8 @@ function SelectSmall({ optionChange }) {
 
   // Mapeo de valores a sus etiquetas
   const tipoLabels = {
-    10: "Criptomonedas",
-    20: "NASDAQ",
+    criptomonedas: "Criptomonedas",
+    nasdaq: "NASDAQ",
   };
 
   return (
@@ -98,10 +98,10 @@ function SelectSmall({ optionChange }) {
           );
         }}
       >
-        <MenuItem value={10} sx={menuItemStyles}>
+        <MenuItem value="criptomonedas" sx={menuItemStyles}>
           Criptomonedas
         </MenuItem>
-        <MenuItem value={20} sx={menuItemStyles}>
+        <MenuItem value="nasdaq" sx={menuItemStyles}>
           NASDAQ
         </MenuItem>
       </Select>

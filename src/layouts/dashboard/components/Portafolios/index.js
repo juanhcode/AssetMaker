@@ -24,20 +24,12 @@ const initialPortfolios = [
     id: 1,
     name: "Portafolio 1",
     description: "Portafolio inicial",
-    averageAnnualReturn: 8.5,
-    portfolioPerformance: 20.0,
-    standardDeviation: 12.0,
-    idUser: 1,
     image: homeDecor1,
   },
   {
     id: 2,
     name: "Portafolio 2",
     description: "Otro portafolio",
-    averageAnnualReturn: 6.3,
-    portfolioPerformance: 15.2,
-    standardDeviation: 10.0,
-    idUser: 2,
     image: homeDecor2,
   },
 ];
@@ -45,10 +37,6 @@ const initialPortfolios = [
 const initialNewPortfolio = {
   name: "",
   description: "",
-  averageAnnualReturn: "",
-  portfolioPerformance: "",
-  standardDeviation: "",
-  idUser: "",
   image: null,
 };
 
@@ -159,7 +147,6 @@ function Portfolios() {
                     image={portfolio.image}
                     label={portfolio.description}
                     title={portfolio.name}
-                    description={`Retorno: ${portfolio.averageAnnualReturn}% | Rendimiento: ${portfolio.portfolioPerformance}% | Desviación: ${portfolio.standardDeviation}%`}
                     action={{
                       type: "internal",
                       color: "info",
@@ -185,9 +172,6 @@ function Portfolios() {
           {[
             { label: "Nombre del Portafolio", name: "name" },
             { label: "Descripción", name: "description" },
-            { label: "Retorno Anual Promedio (%)", name: "averageAnnualReturn" },
-            { label: "Rendimiento del Portafolio (%)", name: "portfolioPerformance" },
-            { label: "Desviación Estándar (%)", name: "standardDeviation" },
           ].map(({ label, name }) => (
             <TextField
               key={name}
