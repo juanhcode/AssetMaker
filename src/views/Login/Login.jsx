@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
-import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -66,8 +66,7 @@ function Login() {
             placeholder="Contraseña"
             required
           />
-          <FaLock className="icon" />
-          <span className="toggle-password" onClick={handleTogglePassword}>
+          <span className="icon" onClick={handleTogglePassword}>
             {showPassword ? <FaEyeSlash /> : <FaEye />}
           </span>
         </div>

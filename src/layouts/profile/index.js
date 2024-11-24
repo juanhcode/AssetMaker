@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Modal, TextField, Button, Grid } from "@mui/material";
+import { Modal, TextField, Button, Grid, Skeleton } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
 import ProfileInfoCard from "examples/Cards/InfoCards/ProfileInfoCard";
-import ProfilesList from "examples/Lists/ProfilesList";
 import Header from "layouts/profile/components/Header";
-import profilesListData from "layouts/profile/data/profilesListData";
 
 function Overview() {
   const navigate = useNavigate();
@@ -26,6 +23,8 @@ function Overview() {
     Descripción: "",
     Perfil_De_Riesgo: "",
   });
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Función para simular un timeout
@@ -66,6 +65,7 @@ function Overview() {
           Perfil_De_Riesgo: "Moderado",
         });
       }
+      setLoading(false);
     };
 
     fetchUserData();
@@ -134,7 +134,7 @@ function Overview() {
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox mb={2} />
-      <Header userName={profileData.Nombre}>
+      <Header userName={profileData.Nombre} isLoading={loading}>
         <MDBox mt={5} mb={3}>
           <Grid container spacing={1}>
             <Grid item xs={12} md={6} xl={4}>
@@ -149,7 +149,6 @@ function Overview() {
                   Ubicación: profileData.Ubicación,
                   Perfil_De_Riesgo: profileData.Perfil_De_Riesgo,
                 }}
-                social={[]}
                 actions={[
                   {
                     onClick: () => handleModal("update", true),
@@ -163,10 +162,8 @@ function Overview() {
                   },
                 ]}
                 shadow={false}
+                isLoading={loading}
               />
-            </Grid>
-            <Grid item xs={12} xl={4}>
-              <ProfilesList title="conversations" profiles={profilesListData} shadow={false} />
             </Grid>
           </Grid>
         </MDBox>
@@ -283,8 +280,6 @@ function Overview() {
           </MDBox>
         </MDBox>
       </Modal>
-
-      <Footer />
     </DashboardLayout>
   );
 }

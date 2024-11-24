@@ -9,12 +9,13 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-  CircularProgress,
+  Skeleton,
   IconButton,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
 import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
 import homeDecor1 from "assets/images/home-decor-1.jpg";
 import homeDecor2 from "assets/images/home-decor-2.jpg";
@@ -74,6 +75,10 @@ function Portfolios() {
     setOpen(true);
   };
 
+  const handleDelete = (portafolioId) => {
+    setPortfolios(portfolios.filter((p) => p.id !== portafolioId));
+  };
+
   const handleClose = () => {
     setOpen(false);
     setNewPortfolio(initialNewPortfolio);
@@ -115,30 +120,34 @@ function Portfolios() {
 
   return (
     <Card>
-      <MDBox p={2}>
-        <MDTypography variant="h6" fontWeight="medium" sx={{ fontSize: "1.5rem" }}>
-          Mis Portafolios de Inversión
-        </MDTypography>
-        <MDBox pt={2}>
-          <Button
-            variant="contained"
-            color="primary"
+      <MDBox p={1}>
+        <MDBox pt={1} display="flex" justifyContent="flex-end">
+          <IconButton
+            color="white"
             onClick={() => handleOpen()}
             sx={{
-              padding: "5px 10px",
-              borderRadius: "8px",
-              color: theme.palette.common.white,
-              ...buttonStyles,
+              padding: "10px",
+              borderRadius: "50%",
+              bgcolor: theme.palette.info.main,
+              "&:hover": {
+                bgcolor: theme.palette.info.dark,
+              },
             }}
           >
-            Crear Nuevo Portafolio
-          </Button>
+            <AddIcon />
+          </IconButton>
         </MDBox>
         <MDBox sx={{ maxHeight: "600px", overflowY: "auto", padding: 2 }}>
           {isLoading ? (
-            <MDBox display="flex" justifyContent="center" alignItems="center" height="300px">
-              <CircularProgress />
-            </MDBox>
+            <Grid container spacing={2}>
+              {[1, 2, 3, 4].map((item) => (
+                <Grid item xs={12} sm={6} md={6} xl={3} key={item}>
+                  <Skeleton variant="rectangular" width="100%" height={200} />
+                  <Skeleton width="60%" />
+                  <Skeleton width="40%" />
+                </Grid>
+              ))}
+            </Grid>
           ) : (
             <Grid container spacing={2}>
               {portfolios.map((portfolio) => (
@@ -154,11 +163,18 @@ function Portfolios() {
                     }}
                   />
                   <IconButton
-                    color="primary"
+                    color="info"
                     onClick={() => handleOpen(portfolio.id)}
                     sx={{ marginTop: 1 }}
                   >
                     <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    color="error"
+                    onClick={() => handleDelete(portfolio.id)}
+                    sx={{ marginTop: 1 }}
+                  >
+                    <DeleteIcon />
                   </IconButton>
                 </Grid>
               ))}

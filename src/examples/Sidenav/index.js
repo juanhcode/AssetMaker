@@ -4,9 +4,11 @@ import PropTypes from "prop-types";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import Icon from "@mui/material/Icon";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import LogoutIcon from "@mui/icons-material/Logout";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import MDButton from "components/MDButton";
 import SidenavCollapse from "examples/Sidenav/SidenavCollapse";
 import SidenavRoot from "examples/Sidenav/SidenavRoot";
 import sidenavLogoLabel from "examples/Sidenav/styles/sidenav";
@@ -133,16 +135,23 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
       />
       <List>{renderRoutes}</List>
       {!miniSidenav && (
-        <MDBox p={2} mt="auto">
-          <MDButton
-            variant="gradient"
-            color={sidenavColor}
-            fullWidth
-            onClick={handleLogout}
-            sx={{ fontSize: "1.2rem", padding: "1rem 1.5rem" }}
-          >
-            Cerrar Sesión
-          </MDButton>
+        <MDBox p={2} mt="auto" display="flex" justifyContent="center">
+          <Tooltip title="Cerrar Sesión" placement="top">
+            <IconButton
+              onClick={handleLogout}
+              sx={{
+                padding: "10px",
+                borderRadius: "50%",
+                color: "white",
+                bgcolor: `${sidenavColor}.main`,
+                "&:hover": {
+                  bgcolor: `${sidenavColor}.dark`,
+                },
+              }}
+            >
+              <LogoutIcon />
+            </IconButton>
+          </Tooltip>
         </MDBox>
       )}
     </SidenavRoot>

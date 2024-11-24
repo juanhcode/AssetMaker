@@ -8,7 +8,6 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
 import projectsTableData from "layouts/tables/data/projectsTableData";
 import nasdaq from "layouts/tables/data/nasdaq";
 
@@ -84,7 +83,7 @@ function Tables() {
               >
                 <Box display="flex" alignItems="center">
                   <MDTypography variant="h3" color="white">
-                    Activos en cartera
+                    Activos disponibles
                   </MDTypography>
                   <SelectSmall optionChange={handleOptionChange} />
                 </Box>
@@ -137,8 +136,6 @@ function Tables() {
           </Grid>
         </Grid>
       </MDBox>
-
-      <Footer />
     </DashboardLayout>
   );
 }
