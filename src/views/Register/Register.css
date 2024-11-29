@@ -99,7 +99,7 @@
 
 .toggle-visibility {
     position: absolute;
-    right: 60px;
+    right: 20px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;

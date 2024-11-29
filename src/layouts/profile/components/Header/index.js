@@ -2,10 +2,7 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
-import AppBar from "@mui/material/AppBar";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Icon from "@mui/material/Icon";
+import Skeleton from "@mui/material/Skeleton";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
@@ -13,11 +10,10 @@ import breakpoints from "assets/theme/base/breakpoints";
 import burceMars from "assets/images/bruce-mars.jpg";
 import backgroundImage from "assets/images/bg-profile.jpeg";
 
-function Header({ children, userName = "Christian" }) {
+function Header({ children, userName = "", isLoading = false }) {
   const [tabsOrientation, setTabsOrientation] = useState(
     window.innerWidth < breakpoints.values.sm ? "vertical" : "horizontal"
   );
-  const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     function handleTabsOrientation() {
@@ -30,8 +26,6 @@ function Header({ children, userName = "Christian" }) {
     window.addEventListener("resize", handleTabsOrientation);
     return () => window.removeEventListener("resize", handleTabsOrientation);
   }, [tabsOrientation]);
-
-  const handleSetTabValue = (event, newValue) => setTabValue(newValue);
 
   return (
     <MDBox position="relative" mb={5}>
@@ -63,47 +57,30 @@ function Header({ children, userName = "Christian" }) {
       >
         <Grid container spacing={3} alignItems="center">
           <Grid item>
-            <MDAvatar src={burceMars} alt="profile-image" size="xl" shadow="sm" />
+            {isLoading ? (
+              <Skeleton variant="circular" width={40} height={40} />
+            ) : (
+              <MDAvatar src={burceMars} alt="profile-image" size="xl" shadow="sm" />
+            )}
           </Grid>
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
-              <MDTypography variant="h4" fontWeight="medium">
-                {userName}
-              </MDTypography>
-              <MDTypography variant="h5" color="text" fontWeight="regular">
-                Inversor
-              </MDTypography>
+              {isLoading ? (
+                <>
+                  <Skeleton width={70} height={20} />
+                  <Skeleton width={70} height={20} />
+                </>
+              ) : (
+                <>
+                  <MDTypography variant="h4" fontWeight="medium">
+                    {userName}
+                  </MDTypography>
+                  <MDTypography variant="h5" color="text" fontWeight="regular">
+                    Inversor
+                  </MDTypography>
+                </>
+              )}
             </MDBox>
-          </Grid>
-          <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
-            <AppBar position="static">
-              <Tabs orientation={tabsOrientation} value={tabValue} onChange={handleSetTabValue}>
-                <Tab
-                  label="Aplicación"
-                  icon={
-                    <Icon fontSize="large" sx={{ mt: -0.25 }}>
-                      home
-                    </Icon>
-                  }
-                />
-                <Tab
-                  label="Mensaje"
-                  icon={
-                    <Icon fontSize="large" sx={{ mt: -0.25 }}>
-                      email
-                    </Icon>
-                  }
-                />
-                <Tab
-                  label="Configuración"
-                  icon={
-                    <Icon fontSize="large" sx={{ mt: -0.25 }}>
-                      settings
-                    </Icon>
-                  }
-                />
-              </Tabs>
-            </AppBar>
           </Grid>
         </Grid>
         {children}
@@ -115,6 +92,7 @@ function Header({ children, userName = "Christian" }) {
 Header.propTypes = {
   children: PropTypes.node,
   userName: PropTypes.string,
+  isLoading: PropTypes.bool,
 };
 
 export default Header;

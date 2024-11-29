@@ -101,7 +101,6 @@ const Register = () => {
             placeholder="Contraseña"
             required
           />
-          <FaLock className="icon" />
           <span className="toggle-visibility" onClick={() => setShowPassword(!showPassword)}>
             {showPassword ? <FaEyeSlash /> : <FaEye />}
           </span>
@@ -116,7 +115,6 @@ const Register = () => {
             placeholder="Confirmar Contraseña"
             required
           />
-          <FaLock className="icon" />
           <span
             className="toggle-visibility"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
