@@ -16,7 +16,7 @@ function Login() {
     setError(null);
     try {
       //https://mocki.io/v1/cc62589e-5292-40da-855f-e8bc854a7d10
-      const response = await fetch("http://34.44.169.14:8082/rest/auth/login", {
+      const response = await fetch(ENDPOINTS.LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,7 +25,7 @@ function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-      console.log("Login", response);
+      console.log("Login", response.data);
 
       if (!response.ok) {
         setError("No existe el usuario");

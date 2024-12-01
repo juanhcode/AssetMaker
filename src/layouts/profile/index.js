@@ -39,6 +39,8 @@ function Overview() {
           timeout(3000), // Timeout en 3 segundos
         ]);
 
+        console.log("Response", response);
+
         if (!response.ok) {
           throw new Error("Error al cargar los datos del usuario");
         }
