@@ -8,6 +8,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import ProfileInfoCard from "examples/Cards/InfoCards/ProfileInfoCard";
 import Header from "layouts/profile/components/Header";
+import { BASE_URL, ENDPOINTS } from "../../config";
 
 function Overview() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ function Overview() {
     const fetchUserData = async () => {
       try {
         const response = await Promise.race([
-          fetch("http://35.222.15.110:8082/users/4"), // Aquí va la URL de la API
+          fetch(ENDPOINTS.USERS), // Aquí va la URL de la API
           timeout(3000), // Timeout en 3 segundos
         ]);
 

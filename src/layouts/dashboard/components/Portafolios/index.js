@@ -11,6 +11,7 @@ import {
   TextField,
   Skeleton,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -125,6 +126,7 @@ function Portfolios() {
           <IconButton
             color="white"
             onClick={() => handleOpen()}
+            aria-label="Crear nuevo portafolio"
             sx={{
               padding: "10px",
               borderRadius: "50%",
@@ -169,13 +171,16 @@ function Portfolios() {
                   >
                     <EditIcon />
                   </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleDelete(portfolio.id)}
-                    sx={{ marginTop: 1 }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  <Tooltip title="Eliminar portafolio">
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(portfolio.id)}
+                      sx={{ marginTop: 1, marginLeft: 1 }}
+                      aria-label="Eliminar portafolio"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Grid>
               ))}
             </Grid>
