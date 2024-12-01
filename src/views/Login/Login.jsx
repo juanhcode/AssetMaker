@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import { FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
+import { ENDPOINTS } from "config";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -14,12 +15,14 @@ function Login() {
     e.preventDefault();
     setError(null);
     try {
-      //http://34.45.127.11:8082/rest/auth/login
-      const response = await fetch("https://mocki.io/v1/cc62589e-5292-40da-855f-e8bc854a7d10", {
-        method: "GET",
+      //https://mocki.io/v1/cc62589e-5292-40da-855f-e8bc854a7d10
+      const response = await fetch("http://34.44.169.14:8082/rest/auth/login", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
+        body: JSON.stringify({ email, password }),
       });
 
       console.log("Login", response);

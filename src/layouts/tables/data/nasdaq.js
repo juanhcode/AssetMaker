@@ -26,10 +26,10 @@ const calcularDesviacionEstandar = (rendimientos) => {
   return Math.sqrt(sumaDeCuadrados / n);
 };
 
-// Cálculo de los máximos y mínimos rendimientos
-const calcularMaxMinRendimiento = (rendimientos) => {
-  const maxRendimiento = Math.max(...rendimientos);
-  const minRendimiento = Math.min(...rendimientos);
+// Función para calcular máximos y mínimos rendimientos
+const calcularMaxMinRendimiento = (rendimientoPromedio, desviacionEstandar) => {
+  const maxRendimiento = rendimientoPromedio + desviacionEstandar;
+  const minRendimiento = rendimientoPromedio - desviacionEstandar;
   return { maxRendimiento, minRendimiento };
 };
 
@@ -85,7 +85,10 @@ function Data({ selectedOption, pagina }) {
       console.log(`Desviación estándar para ${symbol}:`, desviacionEstandar);
 
       // Calcular máximos y mínimos rendimientos
-      const { maxRendimiento, minRendimiento } = calcularMaxMinRendimiento(rendimientos);
+      const { maxRendimiento, minRendimiento } = calcularMaxMinRendimiento(
+        rendimientoPromedio,
+        desviacionEstandar
+      );
 
       const priceData = {
         precioCierre: precioCierre[precioCierre.length - 1],
