@@ -11,6 +11,7 @@ function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+    print("hola");
     e.preventDefault();
     setError(null);
     try {
