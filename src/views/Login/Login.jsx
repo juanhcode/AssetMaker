@@ -15,7 +15,7 @@ function Login() {
     setError(null);
     try {
       //http://34.45.127.11:8082/rest/auth/login
-      const response = await fetch("https://34.44.169.14:8082/rest/auth/login", {
+      const response = await fetch("http://34.44.169.14:8082/rest/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
