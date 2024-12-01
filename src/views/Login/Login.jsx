@@ -15,14 +15,15 @@ function Login() {
     setError(null);
     try {
       //http://34.45.127.11:8082/rest/auth/login
-      const response = await fetch("https://mocki.io/v1/cc62589e-5292-40da-855f-e8bc854a7d10", {
-        method: "GET",
+      const response = await fetch("http://35.192.180.100:8082/rest/auth/login", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ email, password }),
       });
 
-      console.log("Login", response);
+      console.log("Login", response.data);
 
       if (!response.ok) {
         setError("No existe el usuario");
