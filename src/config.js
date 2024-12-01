@@ -1,4 +1,4 @@
-const BASE_URL = "http://35.192.180.100:8082";
+const BASE_URL = "http://34.44.169.14:8082";
 
 export const ENDPOINTS = {
   USERS: `${BASE_URL}/users`,
