@@ -15,7 +15,7 @@ function Login() {
     e.preventDefault();
     setError(null);
     try {
-      //https://mocki.io/v1/cc62589e-5292-40da-855f-e8bc854a7d10
+      //http://34.45.127.11:8082/rest/auth/login
       const response = await fetch(ENDPOINTS.LOGIN, {
         method: "POST",
         headers: {
