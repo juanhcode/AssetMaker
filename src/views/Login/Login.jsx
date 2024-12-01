@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import { FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
-import { ENDPOINTS } from "config";
 
 function Login() {
+  const URL = process.env.REACT_APP_URL;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -17,7 +17,7 @@ function Login() {
     setError(null);
     try {
       //http://34.45.127.11:8082/rest/auth/login
-      const response = await fetch(ENDPOINTS.LOGIN, {
+      const response = await fetch(URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
