@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
+import { ENDPOINTS } from "../../config";
 import "./Register.css";
 
 const Register = () => {
@@ -28,9 +29,11 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    // Validaciones previas
     if (formData.password !== formData.confirmPassword) {
       setError("Las contraseñas no coinciden");
       return;
@@ -43,7 +46,31 @@ const Register = () => {
       setError("El nombre y apellido solo puede contener letras");
       return;
     }
-    setIsRegistered(true);
+
+    try {
+      // Llamada al endpoint de registro
+      const response = await fetch(ENDPOINTS.REGISTER, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          first_name: formData.name,
+          last_names: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al registrar el usuario. Inténtalo de nuevo.");
+      }
+
+      // Registro exitoso
+      setIsRegistered(true);
+    } catch (err) {
+      setError(err.message || "Error al intentar registrar.");
+    }
   };
 
   const closeModal = () => {
@@ -127,7 +154,7 @@ const Register = () => {
         <p className="create-link-r primary-color">
           ¿Ya tienes cuenta?
           <Link to="/login" style={{ marginLeft: "10px", fontSize: "1.6rem" }}>
-            Iniciar sesion
+            Iniciar sesión
           </Link>
         </p>
       </form>

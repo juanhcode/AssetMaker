@@ -8,7 +8,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import ProfileInfoCard from "examples/Cards/InfoCards/ProfileInfoCard";
 import Header from "layouts/profile/components/Header";
-import { BASE_URL, ENDPOINTS } from "../../config";
+import { ENDPOINTS } from "config";
 
 function Overview() {
   const navigate = useNavigate();
@@ -35,9 +35,10 @@ function Overview() {
     const fetchUserData = async () => {
       try {
         const response = await Promise.race([
-          fetch("http://35.192.180.100:8082/portfolios/users/1"), // Aquí va la URL de la API
-          timeout(9000), // Timeout en 3 segundos
+          fetch(ENDPOINTS.PORTAFOLIO), // Aquí va la URL de la API
+          timeout(3000), // Timeout en 3 segundos
         ]);
+
         console.log("Response", response);
 
         if (!response.ok) {
@@ -46,13 +47,12 @@ function Overview() {
 
         const data = await response.json();
         setProfileData({
-          Nombre: data.first_name,
-          Apellido: data.last_name,
-          Móvil: data.phone || "1234567890",
-          Email: data.email,
-          Ubicación: data.location || "colombia",
-          Descripción: data.description || "Este es mi perfil",
-          Perfil_De_Riesgo: data.risk_profile,
+          Nombre: data[0].name,
+          Apellido: data[0].last_names,
+          Email: data[0].email,
+          Ubicación: data[0].location || "Colombia",
+          Descripción: data[0].description || "Este es mi perfil",
+          Perfil_De_Riesgo: data[0].risk_profile,
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
