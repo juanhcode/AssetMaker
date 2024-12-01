@@ -35,9 +35,10 @@ function Overview() {
     const fetchUserData = async () => {
       try {
         const response = await Promise.race([
-          fetch(ENDPOINTS.USERS), // Aquí va la URL de la API
-          timeout(3000), // Timeout en 3 segundos
+          fetch("http://35.192.180.100:8082/portfolios/users/1"), // Aquí va la URL de la API
+          timeout(9000), // Timeout en 3 segundos
         ]);
+        console.log("Response", response);
 
         if (!response.ok) {
           throw new Error("Error al cargar los datos del usuario");
