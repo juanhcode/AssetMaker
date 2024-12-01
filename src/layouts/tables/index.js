@@ -1,6 +1,6 @@
 // Importaciones principales
 import React, { useState, useEffect } from "react";
-import { CircularProgress, Grid, Card, Button, Box } from "@mui/material";
+import { CircularProgress, Grid, Card, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
 // Componentes personalizados
@@ -20,9 +20,13 @@ function Tables() {
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
   const [selectedRow, setSelectedRow] = useState(null);
+  const [totalRows, setTotalRows] = useState(0);
 
   // Manejo de eventos
-  const handleOptionChange = (option) => setSelectedOption(option);
+  const handleOptionChange = (option) => {
+    setSelectedOption(option);
+    setLoading(true);
+  };
 
   // Manejo de eventos para la paginación
   const manejarCambioDePagina = (nuevaPagina) => {
@@ -43,7 +47,7 @@ function Tables() {
     setSelectedRow(selected);
   };
   const sendData = () => {
-    if (selectedRow.length > 0) {
+    if (selectedRow && selectedRow.length > 0) {
       // Realizar la petición con los datos seleccionados
       console.log("Enviando datos: ", selectedRow);
       // Aquí puedes usar fetch, axios, etc.
@@ -57,6 +61,11 @@ function Tables() {
     // Activa el indicador de carga por 3 segundos
     setLoading(true);
     setTimeout(() => {
+      if (selectedOption === "criptomonedas") {
+        setTotalRows(21); // Total de criptomonedas
+      } else if (selectedOption === "nasdaq") {
+        setTotalRows(5212); // Total del Nasdaq
+      }
       setLoading(false); // Desactiva el indicador después de 3 segundos
     }, 3000);
   }, [pagina, selectedOption]);
@@ -81,12 +90,16 @@ function Tables() {
                 justifyContent="space-between"
                 alignItems="center"
               >
-                <Box display="flex" alignItems="center">
-                  <MDTypography variant="h3" color="white">
-                    Activos disponibles
-                  </MDTypography>
-                  <SelectSmall optionChange={handleOptionChange} />
-                </Box>
+                <Grid container alignItems="center">
+                  <Grid item xs={12} sm={6}>
+                    <MDTypography variant="h3" color="white">
+                      Activos Disponibles
+                    </MDTypography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <SelectSmall optionChange={handleOptionChange} />
+                  </Grid>
+                </Grid>
               </MDBox>
               <MDBox pt={3}>
                 {loading ? (
@@ -106,7 +119,7 @@ function Tables() {
                     columns={pColumns}
                     onPaginationModelChange={manejarCambioDePagina}
                     paginationMode="server"
-                    rowCount={5000}
+                    rowCount={totalRows}
                     pageSizeOptions={[5, 10]}
                     initialState={{ pagination: { paginationModel } }}
                     checkboxSelection
@@ -118,6 +131,9 @@ function Tables() {
                       },
                       "& .MuiDataGrid-columnHeaders": {
                         fontSize: "1.3rem",
+                      },
+                      "& .Mui-selected": {
+                        backgroundColor: "rgba(0, 123, 255, 0.2) !important",
                       },
                     }}
                   />

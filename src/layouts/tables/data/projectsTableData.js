@@ -24,6 +24,7 @@ import logoBat from "assets/images/small-logos/basic-attention-token-bat-logo.pn
 import logoAave from "assets/images/small-logos/aave-aave-logo.png";
 import logoUsdc from "assets/images/small-logos/usd-coin-usdc-logo.png";
 
+// Mapeo de logos por símbolo
 const logos = {
   BTC: logoBtc,
   BCH: logoBch,
@@ -49,22 +50,42 @@ const logos = {
   USDC: logoUsdc,
 };
 
+// Configuración de las credenciales de Alpaca
 const headers = {
   "Apca-Api-Key-Id": "PK6NYSR7W1ZRXWLX2NC9",
   "Apca-Api-Secret-Key": "UTTc5XPc8J8qIpRVHTLmzi5ZIg30xsgy0yipL9b3",
 };
 
+// Configuración del limitador para evitar exceso de solicitudes
 const limiter = new Bottleneck({
   maxConcurrent: 1,
   minTime: 300,
 });
 
+// Caché para almacenar datos y reducir solicitudes
 const cache = {};
 const dataCache = {};
 
+// Función para calcular la desviación estándar
+const calcularDesviacionEstandar = (rendimientos) => {
+  const n = rendimientos.length;
+  const media = rendimientos.reduce((acc, val) => acc + val, 0) / n;
+  const sumaDeCuadrados = rendimientos.reduce((acc, val) => acc + Math.pow(val - media, 2), 0);
+  return Math.sqrt(sumaDeCuadrados / n);
+};
+
+// Cálculo de los máximos y mínimos rendimientos
+const calcularMaxMinRendimiento = (rendimientos) => {
+  const maxRendimiento = Math.max(...rendimientos);
+  const minRendimiento = Math.min(...rendimientos);
+  return { maxRendimiento, minRendimiento };
+};
+
+// Componente principal
 function Data({ selectedOption, pagina }) {
   const [rows, setRows] = useState([]);
 
+  // Obtener precios de criptomonedas
   const fetchPriceOfCrypto = async (symbol) => {
     const cacheKey = `cache-${symbol}`;
 
@@ -78,26 +99,52 @@ function Data({ selectedOption, pagina }) {
 
       const now = new Date();
       const endDate = now.toISOString().split("T")[0];
-      const startDate = new Date(now.setMonth(now.getMonth() - 1)).toISOString().split("T")[0];
-
+      const startDate = new Date(now.setMonth(now.getMonth() - 48)).toISOString().split("T")[0];
       console.time(`${cacheKey}-fetch`);
       console.log(`Realizando petición a Alpaca para ${symbol}`);
+
       const response = await limiter.schedule(() =>
         fetch(
-          `https://data.alpaca.markets/v1beta3/crypto/us/bars?symbols=${symbol}&timeframe=1D&start=${startDate}&end=${endDate}&sort=desc`,
+          `https://data.alpaca.markets/v1beta3/crypto/us/bars?symbols=${symbol}&timeframe=1M&start=${startDate}&end=${endDate}&limit=1000&sort=asc`,
           { headers }
         )
       );
+
       const data = await response.json();
-      const prices = data.bars?.[symbol] || [];
+      const bars = data.bars?.[`${symbol}`] || [];
+      console.log(`Precios para ${symbol}:`, bars);
+
+      // Extrayendo precios de cierre
+      const precioCierre = bars.map((bar) => bar.c).slice(-48);
+      console.log(`Precios de cierre para ${symbol}:`, precioCierre);
+
+      let rendimientos = [];
+      for (let i = 1; i < precioCierre.length; i++) {
+        const precioActual = precioCierre[i];
+        const precioAnterior = precioCierre[i - 1];
+        const rendimiento = ((precioActual - precioAnterior) / precioAnterior) * 100;
+        rendimientos.push(rendimiento);
+      }
+      console.log(`Rendimientos para ${symbol}:`, rendimientos);
+
+      const rendimientoPromedio =
+        rendimientos.reduce((acc, val) => acc + val, 0) / rendimientos.length;
+
+      // Calcular desviación estándar
+      const desviacionEstandar = calcularDesviacionEstandar(rendimientos);
+      console.log(`Desviación estándar para ${symbol}:`, desviacionEstandar);
+
+      // Calcular máximos y mínimos rendimientos
+      const { maxRendimiento, minRendimiento } = calcularMaxMinRendimiento(rendimientos);
 
       const priceData = {
-        prices: prices.map((bar) => bar.c),
-        min: Math.min(...prices.map((bar) => bar.l)),
-        max: Math.max(...prices.map((bar) => bar.h)),
-        initial: prices.length ? prices[0].o : 0,
-        final: prices.length ? prices[prices.length - 1].c : 0,
+        precioCierre: precioCierre[precioCierre.length - 1],
+        rendimiento: rendimientoPromedio.toFixed(2),
+        desviacionEstandar: desviacionEstandar.toFixed(2),
+        maxRendimiento: maxRendimiento.toFixed(2),
+        minRendimiento: minRendimiento.toFixed(2),
       };
+      console.log(`Rendimiento promedio para ${symbol}:`, priceData);
 
       cache[symbol] = priceData;
 
@@ -108,12 +155,10 @@ function Data({ selectedOption, pagina }) {
     }
   };
 
+  // Función para obtener datos de las acciones Crypto
   const fetchData = async (page) => {
     try {
-      if (dataCache[page]) {
-        setRows(dataCache[page]);
-        return;
-      }
+      if (dataCache[page]) return setRows(dataCache[page]);
 
       console.time("fetchData");
 
@@ -131,17 +176,16 @@ function Data({ selectedOption, pagina }) {
         currentPageData.map(async (item) => {
           const priceData = await fetchPriceOfCrypto(item.symbol);
 
-          const monthlyReturn = ((priceData.final - priceData.initial) / priceData.initial) * 100;
-          const monthlyRisk = calculateStandardDeviation(priceData.prices);
-
           return {
             currency: item.symbol,
             name: item.name.split("/")[0].trim(),
-            price: priceData.final || 0,
-            monthlyReturn: monthlyReturn.toFixed(2),
-            monthlyRisk: monthlyRisk.toFixed(2),
-            minReturn: priceData.min.toFixed(2),
-            maxReturn: priceData.max.toFixed(2),
+            price: priceData.precioCierre || 0,
+            threeYearReturn: priceData?.rendimiento ? `${priceData.rendimiento}%` : "0.00%",
+            desviacionEstandar: priceData?.desviacionEstandar
+              ? `${priceData.desviacionEstandar}%`
+              : "0.00%",
+            maxRendimiento: priceData?.maxRendimiento ? `${priceData.maxRendimiento}%` : "0.00%",
+            minRendimiento: priceData?.minRendimiento ? `${priceData.minRendimiento}%` : "0.00%",
           };
         })
       );
@@ -160,24 +204,16 @@ function Data({ selectedOption, pagina }) {
     }
   };
 
-  const calculateStandardDeviation = (values) => {
-    if (values.length === 0) return 0;
-    const mean = values.reduce((acc, val) => acc + val, 0) / values.length;
-    const squaredDiffs = values.map((val) => Math.pow(val - mean, 2));
-    const avgSquaredDiff = squaredDiffs.reduce((acc, val) => acc + val, 0) / values.length;
-    return Math.sqrt(avgSquaredDiff);
-  };
-
   useEffect(() => {
     fetchData(pagina.page || 0);
-  }, [pagina]);
+  }, [pagina, selectedOption]);
 
   const columns = [
-    { field: "id", headerName: "#", width: 70 },
+    { field: "id", headerName: "#", width: 50 },
     {
       field: "currency",
       headerName: "Moneda",
-      width: 130,
+      width: 120,
       renderCell: (params) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <img
@@ -189,12 +225,74 @@ function Data({ selectedOption, pagina }) {
         </div>
       ),
     },
-    { field: "name", headerName: "Nombre", width: 130 },
-    { field: "price", headerName: "Precio", type: "number", width: 100 },
-    { field: "monthlyReturn", headerName: "Rendimiento mensual", type: "number", width: 150 },
-    { field: "monthlyRisk", headerName: "Riesgo mensual", type: "number", width: 130 },
-    { field: "minReturn", headerName: "Rendimiento mínimo", type: "number", width: 150 },
-    { field: "maxReturn", headerName: "Rendimiento máximo", type: "number", width: 150 },
+    { field: "name", headerName: "Nombre", width: 100 },
+    { field: "price", headerName: "Precio", type: "number", width: 80 },
+    {
+      field: "threeYearReturn",
+      headerName: "Rendimiento Mensual",
+      type: "number",
+      width: 170,
+      renderCell: (params) => {
+        const rendimiento = parseFloat(params.row.threeYearReturn);
+        const isPositive = rendimiento >= 0;
+
+        return (
+          <div style={{ color: isPositive ? "green" : "red" }}>
+            {isPositive ? `▲ ${params.row.threeYearReturn}` : `▼ ${params.row.threeYearReturn}`}
+          </div>
+        );
+      },
+    },
+    {
+      field: "desviacionEstandar",
+      headerName: "Desviación Estándar",
+      type: "number",
+      width: 170,
+      renderCell: (params) => {
+        const desviacion = parseFloat(params.row.desviacionEstandar);
+        const isPositive = desviacion >= 0;
+
+        return (
+          <div style={{ color: isPositive ? "green" : "red" }}>
+            {isPositive
+              ? `▲ ${params.row.desviacionEstandar}`
+              : `▼ ${params.row.desviacionEstandar}`}
+          </div>
+        );
+      },
+    },
+    {
+      field: "maxRendimiento",
+      headerName: "Máximo Rendimiento",
+      type: "number",
+      width: 170,
+      renderCell: (params) => {
+        const maxRendimiento = parseFloat(params.row.maxRendimiento);
+        const isPositive = maxRendimiento >= 0;
+
+        return (
+          <div style={{ color: isPositive ? "green" : "red" }}>
+            {isPositive ? `▲ ${params.row.maxRendimiento}` : `▼ ${params.row.maxRendimiento}`}
+          </div>
+        );
+      },
+    },
+    {
+      field: "minRendimiento",
+      headerName: "Mínimo Rendimiento",
+      type: "number",
+      width: 170,
+      renderCell: (params) => {
+        const minRendimiento = parseFloat(params.row.minRendimiento);
+        const isPositive = minRendimiento >= 0;
+
+        return (
+          <div style={{ color: isPositive ? "green" : "red" }}>
+            {isPositive ? `▲ ${params.row.minRendimiento}` : `▼ ${params.row.minRendimiento}`}
+          </div>
+        );
+      },
+    },
   ];
 
   return { columns, rows };
