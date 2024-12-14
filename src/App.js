@@ -78,7 +78,8 @@ export default function App() {
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
-  const showSidenav = !["/", "/Login", "/login", "/register"].includes(pathname);
+  const excludedRoutes = ["/", "/login", "/register"];
+  const showSidenav = !excludedRoutes.includes(pathname.toLowerCase());
 
   return (
     <ThemeProvider theme={darkMode ? themeDark : theme}>

@@ -46,6 +46,7 @@ function Tables() {
     const selected = pRows.filter((row) => selectionModel.includes(row.id));
     setSelectedRow(selected);
   };
+
   const sendData = () => {
     if (selectedRow && selectedRow.length > 0) {
       // Realizar la petición con los datos seleccionados

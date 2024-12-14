@@ -1,219 +1,312 @@
 import React, { useState, useEffect } from "react";
-import { useTheme } from "@mui/material/styles";
+import { Link } from "react-router-dom";
 import {
-  Card,
-  Grid,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   TextField,
-  Skeleton,
+  Card,
+  CardContent,
+  Typography,
+  Grid,
   IconButton,
   Tooltip,
+  Skeleton,
+  Box,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
-import MDBox from "components/MDBox";
-import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
-import homeDecor1 from "assets/images/home-decor-1.jpg";
-import homeDecor2 from "assets/images/home-decor-2.jpg";
+import theme from "assets/theme";
+import { ENDPOINTS } from "../../../../config";
 
-const initialPortfolios = [
-  {
-    id: 1,
-    name: "Portafolio 1",
-    description: "Portafolio inicial",
-    image: homeDecor1,
-  },
-  {
-    id: 2,
-    name: "Portafolio 2",
-    description: "Otro portafolio",
-    image: homeDecor2,
-  },
-];
-
-const initialNewPortfolio = {
-  name: "",
-  description: "",
-  image: null,
-};
-
-const buttonStyles = {
-  fontSize: "1rem",
-  fontWeight: "bold",
-};
-
-function Portfolios() {
-  const theme = useTheme();
-  const [portfolios, setPortfolios] = useState(initialPortfolios);
+const Portafolios = () => {
+  const [portafolios, setPortafolios] = useState([]);
+  const [newPortafolios, setNewPortafolios] = useState({
+    name: "",
+    description: "",
+  });
+  const [currentPortafoliosId, setCurrentPortafoliosId] = useState(null);
   const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [newPortfolio, setNewPortfolio] = useState(initialNewPortfolio);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentPortfolioId, setCurrentPortfolioId] = useState(null);
+  const [loading, setLoading] = useState(true); // Estado para manejar la carga de los portafolios
 
+  // Obtener los portafolios del usuario (GET)
   useEffect(() => {
-    // Simular carga inicial
-    setTimeout(() => setIsLoading(false), 1000);
+    const fetchPortafolios = async () => {
+      try {
+        const response = await fetch(ENDPOINTS.PORTAFOLIO(1));
+        if (response.ok) {
+          const data = await response.json();
+          setPortafolios(data);
+          setLoading(false); // Establecer loading en false una vez se obtienen los datos
+        } else {
+          console.log("No se pudieron obtener los portafolios.");
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchPortafolios();
   }, []);
 
-  const handleOpen = (portfolioId = null) => {
-    if (portfolioId !== null) {
-      // Modo edición
-      const portfolioToEdit = portfolios.find((p) => p.id === portfolioId);
-      setNewPortfolio(portfolioToEdit);
-      setIsEditing(true);
-      setCurrentPortfolioId(portfolioId);
-    } else {
-      // Modo creación
-      setNewPortfolio(initialNewPortfolio);
-      setIsEditing(false);
-    }
+  const handleOpen = () => {
     setOpen(true);
-  };
-
-  const handleDelete = (portafolioId) => {
-    setPortfolios(portfolios.filter((p) => p.id !== portafolioId));
+    if (isEditing) {
+      const portafolioToEdit = portafolios.find(
+        (portafolio) => portafolio.id === currentPortafoliosId
+      );
+      setNewPortafolios({
+        name: portafolioToEdit.name,
+        description: portafolioToEdit.description,
+      });
+    }
   };
 
   const handleClose = () => {
     setOpen(false);
-    setNewPortfolio(initialNewPortfolio);
     setIsEditing(false);
-    setCurrentPortfolioId(null);
   };
 
-  const handleChange = ({ target: { name, value } }) => {
-    setNewPortfolio((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleAddPortafolios = async () => {
+    if (!newPortafolios.name.trim() || !newPortafolios.description.trim()) {
+      alert("Todos los campos son obligatorios.");
+      return;
+    }
 
-  const handleImageChange = ({ target }) => {
-    const file = target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = ({ target: { result } }) => {
-        setNewPortfolio((prev) => ({ ...prev, image: result }));
-      };
-      reader.readAsDataURL(file);
+    const portafolioData = {
+      name: newPortafolios.name,
+      description: newPortafolios.description,
+      averageAnnualReturn: 15.62,
+      portfolioPerformance: 43.52,
+      standardDeviation: 25.58,
+      idUser: 1, // Cambiar por el ID del usuario actual
+    };
+
+    try {
+      const response = await fetch(ENDPOINTS.CREATE_PORTAFOLIO, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(portafolioData),
+      });
+
+      if (response.ok) {
+        const newPortafolio = await response.json();
+        setPortafolios([...portafolios, newPortafolio]);
+        handleClose();
+      } else {
+        alert("Error al crear el portafolio.");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      alert("Error al crear el portafolio.");
     }
   };
 
-  const handleAddPortfolio = () => {
-    const newPortfolioWithId = {
-      ...newPortfolio,
-      id: portfolios.length + 1,
+  const handleEditPortafolios = async () => {
+    const updatedPortafoliosData = {
+      ...newPortafolios,
+      averageAnnualReturn: 50.21,
+      portfolioPerformance: 21.01,
+      standardDeviation: 40.05,
+      idUser: 1,
     };
-    setPortfolios([...portfolios, newPortfolioWithId]);
-    handleClose();
+
+    try {
+      const response = await fetch(ENDPOINTS.EDIT_PORTAFOLIO(currentPortafoliosId), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedPortafoliosData),
+      });
+
+      if (response.ok) {
+        const updatedPortafolio = await response.json();
+        setPortafolios(
+          portafolios.map((portafolio) =>
+            portafolio.id === currentPortafoliosId ? updatedPortafolio : portafolio
+          )
+        );
+        handleClose();
+      } else {
+        alert("Error al actualizar el portafolio.");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      alert("Error al actualizar el portafolio.");
+    }
   };
 
-  const handleEditPortfolio = () => {
-    const updatedPortfolios = portfolios.map((portfolio) =>
-      portfolio.id === currentPortfolioId ? { ...portfolio, ...newPortfolio } : portfolio
-    );
-    setPortfolios(updatedPortfolios);
-    handleClose();
+  const handleDelete = async (portafoliosId) => {
+    try {
+      const response = await fetch(ENDPOINTS.DELETE_PORTAFOLIO(portafoliosId), {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setPortafolios(portafolios.filter((p) => p.id !== portafoliosId));
+      } else {
+        alert("Error al eliminar el portafolio.");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      alert("Error al eliminar el portafolio.");
+    }
+  };
+
+  const buttonStyles = {
+    fontSize: "1rem",
+    fontWeight: "bold",
   };
 
   return (
     <Card>
-      <MDBox p={1}>
-        <MDBox pt={1} display="flex" justifyContent="flex-end">
-          <IconButton
-            color="white"
-            onClick={() => handleOpen()}
-            aria-label="Crear nuevo portafolio"
-            sx={{
-              padding: "10px",
-              borderRadius: "50%",
-              bgcolor: theme.palette.info.main,
-              "&:hover": {
-                bgcolor: theme.palette.info.dark,
-              },
-            }}
-          >
-            <AddIcon />
-          </IconButton>
-        </MDBox>
-        <MDBox sx={{ maxHeight: "600px", overflowY: "auto", padding: 2 }}>
-          {isLoading ? (
-            <Grid container spacing={2}>
-              {[1, 2, 3, 4].map((item) => (
-                <Grid item xs={12} sm={6} md={6} xl={3} key={item}>
-                  <Skeleton variant="rectangular" width="100%" height={200} />
-                  <Skeleton width="60%" />
-                  <Skeleton width="40%" />
+      <Box p={2}>
+        <Box pt={1} display="flex" justifyContent="flex-end">
+          <Tooltip title="Crear nuevo portafolio">
+            <IconButton
+              color="white"
+              onClick={() => {
+                setIsEditing(false);
+                handleOpen();
+              }}
+              sx={{
+                padding: "10px",
+                borderRadius: "50%",
+                bgcolor: theme.palette.info.main,
+                "&:hover": {
+                  bgcolor: theme.palette.info.dark,
+                },
+              }}
+            >
+              <AddIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        {/* Contenedor de los portafolios */}
+        <Box sx={{ maxHeight: "600px", overflowY: "auto", padding: 2 }}>
+          <Grid container spacing={2}>
+            {loading ? (
+              <Grid item xs={12} sm={6} md={4} lg={3}>
+                <Card>
+                  <CardContent>
+                    <Skeleton
+                      variant="text"
+                      width="80%"
+                      height={40}
+                      sx={{ marginBottom: "16px" }}
+                    />
+                    <Skeleton
+                      variant="text"
+                      width="100%"
+                      height={20}
+                      sx={{ marginBottom: "8px" }}
+                    />
+                    <Skeleton variant="text" width="90%" height={20} sx={{ marginBottom: "8px" }} />
+                  </CardContent>
+                </Card>
+              </Grid>
+            ) : (
+              portafolios.map((portafolio) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={portafolio.id}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h4">{portafolio.name}</Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ marginBottom: "50px" }}
+                      >
+                        {portafolio.description}
+                      </Typography>
+
+                      {/* Botón para ver detalles */}
+                      <Link
+                        to={`/portafolio-detalles/${portafolio.id}`}
+                        style={{ textDecoration: "none" }}
+                      >
+                        <Button
+                          variant="outlined"
+                          color="white"
+                          fullWidth
+                          sx={{
+                            mt: 1,
+                            fontWeight: "bold",
+                            fontSize: "1.1rem",
+                            bgcolor: theme.palette.info.main,
+                            "&:hover": {
+                              bgcolor: theme.palette.info.dark,
+                            },
+                          }}
+                        >
+                          Ver detalles
+                        </Button>
+                      </Link>
+                      <Box display="flex" justifyContent="space-between">
+                        <Tooltip title="Editar portafolio">
+                          <IconButton
+                            color="info"
+                            onClick={() => {
+                              setIsEditing(true);
+                              setCurrentPortafoliosId(portafolio.id);
+                              handleOpen();
+                            }}
+                            sx={{
+                              fontSize: "2rem",
+                            }}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Eliminar portafolio">
+                          <IconButton
+                            color="error"
+                            onClick={() => handleDelete(portafolio.id)}
+                            sx={{
+                              fontSize: "2rem",
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              ))}
-            </Grid>
-          ) : (
-            <Grid container spacing={2}>
-              {portfolios.map((portfolio) => (
-                <Grid item xs={12} sm={6} md={6} xl={3} key={portfolio.id}>
-                  <DefaultProjectCard
-                    image={portfolio.image}
-                    label={portfolio.description}
-                    title={portfolio.name}
-                    action={{
-                      type: "internal",
-                      color: "info",
-                      label: "Ver Detalles",
-                    }}
-                  />
-                  <IconButton
-                    color="info"
-                    onClick={() => handleOpen(portfolio.id)}
-                    sx={{ marginTop: 1 }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <Tooltip title="Eliminar portafolio">
-                    <IconButton
-                      color="error"
-                      onClick={() => handleDelete(portfolio.id)}
-                      sx={{ marginTop: 1, marginLeft: 1 }}
-                      aria-label="Eliminar portafolio"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Grid>
-              ))}
-            </Grid>
-          )}
-        </MDBox>
-      </MDBox>
+              ))
+            )}
+          </Grid>
+        </Box>
+      </Box>
+
+      {/* Modal para agregar o editar portafolio */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{isEditing ? "Editar Portafolio" : "Crear Nuevo Portafolio"}</DialogTitle>
+        <DialogTitle>{isEditing ? "Editar Portafolio" : "Agregar Nuevo Portafolio"}</DialogTitle>
         <DialogContent>
-          {[
-            { label: "Nombre del Portafolio", name: "name" },
-            { label: "Descripción", name: "description" },
-          ].map(({ label, name }) => (
-            <TextField
-              key={name}
-              margin="dense"
-              name={name}
-              label={label}
-              type="text"
-              fullWidth
-              value={newPortfolio[name]}
-              onChange={handleChange}
-            />
-          ))}
           <TextField
-            accept="image/*"
-            type="file"
-            onChange={handleImageChange}
+            label="Nombre del Portafolio"
             fullWidth
-            margin="dense"
+            value={newPortafolios.name}
+            onChange={(e) => setNewPortafolios({ ...newPortafolios, name: e.target.value })}
+            sx={{ marginBottom: "15px" }}
+          />
+          <TextField
+            label="Descripción"
+            fullWidth
+            value={newPortafolios.description}
+            onChange={(e) => setNewPortafolios({ ...newPortafolios, description: e.target.value })}
+            sx={{ marginBottom: "15px" }}
           />
         </DialogContent>
-
         <DialogActions>
           <Button
             onClick={handleClose}
@@ -231,11 +324,11 @@ function Portfolios() {
             Cancelar
           </Button>
           <Button
-            onClick={isEditing ? handleEditPortfolio : handleAddPortfolio}
+            onClick={isEditing ? handleEditPortafolios : handleAddPortafolios}
             variant="contained"
             sx={{
               ...buttonStyles,
-              bgcolor: theme.palette.success.state,
+              bgcolor: theme.palette.info.main,
               color: theme.palette.common.white,
               "&:hover": {
                 bgcolor: theme.palette.info.main,
@@ -248,6 +341,6 @@ function Portfolios() {
       </Dialog>
     </Card>
   );
-}
+};
 
-export default Portfolios;
+export default Portafolios;

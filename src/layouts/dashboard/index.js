@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 // @mui material components
-import { Grid, Box, Skeleton } from "@mui/material";
+import { Grid, Box, Skeleton, Icon } from "@mui/material";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -39,7 +39,7 @@ function Dashboard() {
             <MDBox mb={2}>
               <ComplexStatisticsCard
                 color="error"
-                icon="warning"
+                icon={<Icon>warning</Icon>}
                 title={
                   loading ? (
                     <Skeleton variant="text" width={150} height={30} />

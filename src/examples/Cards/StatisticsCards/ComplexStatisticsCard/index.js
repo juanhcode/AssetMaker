@@ -10,7 +10,7 @@ import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
-function ComplexStatisticsCard({ color, title, count, percentage, icon }) {
+function ComplexStatisticsCard({ color, title, count, percentage, icon, children }) {
   return (
     <Card>
       <MDBox display="flex" justifyContent="space-between" pt={1} px={2}>
@@ -52,6 +52,7 @@ function ComplexStatisticsCard({ color, title, count, percentage, icon }) {
           &nbsp;{percentage.label}
         </MDTypography>
       </MDBox>
+      {children && <MDBox>{children}</MDBox>}
     </Card>
   );
 }
@@ -64,6 +65,7 @@ ComplexStatisticsCard.defaultProps = {
     text: "",
     label: "",
   },
+  children: null,
 };
 
 // Typechecking props for the ComplexStatisticsCard
@@ -100,6 +102,7 @@ ComplexStatisticsCard.propTypes = {
     label: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   }),
   icon: PropTypes.node.isRequired,
+  children: PropTypes.node,
 };
 
 export default ComplexStatisticsCard;
