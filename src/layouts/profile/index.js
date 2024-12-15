@@ -30,13 +30,11 @@ function Overview() {
   const [profileData, setProfileData] = useState({
     Nombre: "",
     Apellido: "",
-    Email: "",
     Perfil_De_Riesgo: "",
   });
   const [formData, setFormData] = useState({
     Nombre: "",
     Apellido: "",
-    Email: "",
     Perfil_De_Riesgo: "",
   });
 
@@ -65,7 +63,6 @@ function Overview() {
           id: data[0].id,
           Nombre: data[0].first_name,
           Apellido: data[0].last_names,
-          Email: data[0].email,
           Perfil_De_Riesgo: data[0].risk_profile,
         });
       } catch (error) {
@@ -75,7 +72,6 @@ function Overview() {
           id: "default-id",
           Nombre: "John",
           Apellido: "Doe",
-          Email: "johndoe@example.com",
           Perfil_De_Riesgo: "High",
         });
       }
@@ -90,7 +86,6 @@ function Overview() {
       setFormData({
         Nombre: "",
         Apellido: "",
-        Email: "",
         Perfil_De_Riesgo: "",
       });
     }
@@ -109,7 +104,6 @@ function Overview() {
       setProfileData({
         Nombre: "",
         Apellido: "",
-        Email: "",
         Perfil_De_Riesgo: "",
       });
       handleModal("delete", false);
@@ -125,18 +119,35 @@ function Overview() {
   };
 
   const handleSubmit = async () => {
+    if (!formData.Nombre || !formData.Apellido || !formData.Perfil_De_Riesgo) {
+      alert("Todos los campos son obligatorios.");
+      return;
+    }
     try {
-      const response = await fetch(ENDPOINTS.EDIT_USERS(id), {
+      const mappedData = {
+        first_name: formData.Nombre,
+        last_names: formData.Apellido,
+        risk_profile: formData.Perfil_De_Riesgo,
+      };
+
+      const response = await fetch(ENDPOINTS.EDIT_USERS(profileData.id), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(mappedData),
       });
 
       if (!response.ok) {
         throw new Error("Error al actualizar el usuario");
       }
+
+      setProfileData((prev) => ({
+        ...prev,
+        Nombre: formData.Nombre,
+        Apellido: formData.Apellido,
+        Perfil_De_Riesgo: formData.Perfil_De_Riesgo,
+      }));
 
       handleModal("update", false);
     } catch (error) {
@@ -189,7 +200,6 @@ function Overview() {
                 info={{
                   Nombre: profileData.Nombre,
                   Apellido: profileData.Apellido,
-                  Email: profileData.Email,
                   Perfil_De_Riesgo: profileData.Perfil_De_Riesgo,
                 }}
                 actions={[
@@ -223,7 +233,7 @@ function Overview() {
             Actualizar Usuario
           </MDTypography>
           <MDBox component="form">
-            {["Nombre", "Apellido", "Email"].map((field) => (
+            {["Nombre", "Apellido"].map((field) => (
               <TextField
                 key={field}
                 label={field}

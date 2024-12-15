@@ -75,10 +75,10 @@ const calcularDesviacionEstandar = (rendimientos) => {
 };
 
 // Función para calcular máximos y mínimos rendimientos
-const calcularMaxMinRendimiento = (rendimientoPromedio, desviacionEstandar) => {
-  const maxRendimiento = rendimientoPromedio + desviacionEstandar;
-  const minRendimiento = rendimientoPromedio - desviacionEstandar;
-  return { maxRendimiento, minRendimiento };
+const calcularMaxMinRendimiento = (fiveYearPerformance, fiveYearRisk) => {
+  const maximumYield = fiveYearPerformance + fiveYearRisk;
+  const minimumYield = fiveYearPerformance - fiveYearRisk;
+  return { maximumYield, minimumYield };
 };
 
 // Componente principal
@@ -122,30 +122,30 @@ function Data({ selectedOption, pagina }) {
       for (let i = 1; i < precioCierre.length; i++) {
         const precioActual = precioCierre[i];
         const precioAnterior = precioCierre[i - 1];
-        const rendimiento = ((precioActual - precioAnterior) / precioAnterior) * 100;
-        rendimientos.push(rendimiento);
+        const fiveYearPerformance = ((precioActual - precioAnterior) / precioAnterior) * 100;
+        rendimientos.push(fiveYearPerformance);
       }
       console.log(`Rendimientos para ${symbol}:`, rendimientos);
 
-      const rendimientoPromedio =
+      const fiveYearPerformance =
         rendimientos.reduce((acc, val) => acc + val, 0) / rendimientos.length;
 
       // Calcular desviación estándar
-      const desviacionEstandar = calcularDesviacionEstandar(rendimientos);
-      console.log(`Desviación estándar para ${symbol}:`, desviacionEstandar);
+      const fiveYearRisk = calcularDesviacionEstandar(rendimientos);
+      console.log(`Desviación estándar para ${symbol}:`, fiveYearRisk);
 
       // Calcular máximos y mínimos rendimientos
-      const { maxRendimiento, minRendimiento } = calcularMaxMinRendimiento(
-        rendimientoPromedio,
-        desviacionEstandar
+      const { maximumYield, minimumYield } = calcularMaxMinRendimiento(
+        fiveYearPerformance,
+        fiveYearRisk
       );
 
       const priceData = {
         precioCierre: precioCierre[precioCierre.length - 1],
-        rendimiento: rendimientoPromedio.toFixed(2),
-        desviacionEstandar: desviacionEstandar.toFixed(2),
-        maxRendimiento: maxRendimiento.toFixed(2),
-        minRendimiento: minRendimiento.toFixed(2),
+        fiveYearPerformance: fiveYearPerformance.toFixed(2),
+        fiveYearRisk: fiveYearRisk.toFixed(2),
+        maximumYield: maximumYield.toFixed(2),
+        minimumYield: minimumYield.toFixed(2),
       };
       console.log(`Rendimiento promedio para ${symbol}:`, priceData);
 
@@ -183,12 +183,12 @@ function Data({ selectedOption, pagina }) {
             currency: item.symbol,
             name: item.name.split("/")[0].trim(),
             price: priceData.precioCierre || 0,
-            monthlyReturn: priceData?.rendimiento ? `${priceData.rendimiento}%` : "0.00%",
-            desviacionEstandar: priceData?.desviacionEstandar
-              ? `${priceData.desviacionEstandar}%`
+            fiveYearPerformance: priceData?.fiveYearPerformance
+              ? `${priceData.fiveYearPerformance}%`
               : "0.00%",
-            maxRendimiento: priceData?.maxRendimiento ? `${priceData.maxRendimiento}%` : "0.00%",
-            minRendimiento: priceData?.minRendimiento ? `${priceData.minRendimiento}%` : "0.00%",
+            fiveYearRisk: priceData?.fiveYearRisk ? `${priceData.fiveYearRisk}%` : "0.00%",
+            maximumYield: priceData?.maximumYield ? `${priceData.maximumYield}%` : "0.00%",
+            minimumYield: priceData?.minimumYield ? `${priceData.minimumYield}%` : "0.00%",
           };
         })
       );
@@ -231,67 +231,67 @@ function Data({ selectedOption, pagina }) {
     { field: "name", headerName: "Nombre", width: 100 },
     { field: "price", headerName: "Precio", type: "number", width: 80 },
     {
-      field: "monthlyReturn",
+      field: "fiveYearPerformance",
       headerName: "Rendimiento Mensual",
       type: "number",
       width: 170,
       renderCell: (params) => {
-        const rendimiento = parseFloat(params.row.monthlyReturn);
-        const isPositive = rendimiento >= 0;
-
-        return (
-          <div style={{ color: isPositive ? "green" : "red" }}>
-            {isPositive ? `▲ ${params.row.monthlyReturn}` : `▼ ${params.row.monthlyReturn}`}
-          </div>
-        );
-      },
-    },
-    {
-      field: "desviacionEstandar",
-      headerName: "Desviación Estándar",
-      type: "number",
-      width: 170,
-      renderCell: (params) => {
-        const desviacion = parseFloat(params.row.desviacionEstandar);
-        const isPositive = desviacion >= 0;
+        const fiveYearPerformance = parseFloat(params.row.fiveYearPerformance);
+        const isPositive = fiveYearPerformance >= 0;
 
         return (
           <div style={{ color: isPositive ? "green" : "red" }}>
             {isPositive
-              ? `▲ ${params.row.desviacionEstandar}`
-              : `▼ ${params.row.desviacionEstandar}`}
+              ? `▲ ${params.row.fiveYearPerformance}`
+              : `▼ ${params.row.fiveYearPerformance}`}
           </div>
         );
       },
     },
     {
-      field: "maxRendimiento",
+      field: "fiveYearRisk",
+      headerName: "Desviación Estándar",
+      type: "number",
+      width: 170,
+      renderCell: (params) => {
+        const fiveYearRisk = parseFloat(params.row.fiveYearRisk);
+        const isPositive = fiveYearRisk >= 0;
+
+        return (
+          <div style={{ color: isPositive ? "green" : "red" }}>
+            {isPositive ? `▲ ${params.row.fiveYearRisk}` : `▼ ${params.row.fiveYearRisk}`}
+          </div>
+        );
+      },
+    },
+    {
+      field: "maximumYield",
       headerName: "Máximo Rendimiento",
       type: "number",
       width: 170,
       renderCell: (params) => {
-        const maxRendimiento = parseFloat(params.row.maxRendimiento);
-        const isPositive = maxRendimiento >= 0;
+        const maximumYield = parseFloat(params.row.maximumYield);
+        const isPositive = maximumYield >= 0;
 
         return (
           <div style={{ color: isPositive ? "green" : "red" }}>
-            {isPositive ? `▲ ${params.row.maxRendimiento}` : `▼ ${params.row.maxRendimiento}`}
+            {isPositive ? `▲ ${params.row.maximumYield}` : `▼ ${params.row.maximumYield}`}
           </div>
         );
       },
     },
     {
-      field: "minRendimiento",
+      field: "minimumYield",
       headerName: "Mínimo Rendimiento",
       type: "number",
       width: 170,
       renderCell: (params) => {
-        const minRendimiento = parseFloat(params.row.minRendimiento);
-        const isPositive = minRendimiento >= 0;
+        const minimumYield = parseFloat(params.row.minimumYield);
+        const isPositive = minimumYield >= 0;
 
         return (
           <div style={{ color: isPositive ? "green" : "red" }}>
-            {isPositive ? `▲ ${params.row.minRendimiento}` : `▼ ${params.row.minRendimiento}`}
+            {isPositive ? `▲ ${params.row.minimumYield}` : `▼ ${params.row.minimumYield}`}
           </div>
         );
       },
