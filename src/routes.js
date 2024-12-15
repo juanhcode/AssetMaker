@@ -6,6 +6,7 @@ import Profile from "layouts/profile";
 import Home from "views/Home/Home";
 import Login from "views/Login/Login";
 import Register from "views/Register/Register";
+import PortafoliosDetalles from "layouts/dashboard/components/PortafoliosDetalles";
 
 const createCollapseRoute = (name, key, icon, route, component) => ({
   type: "collapse",
@@ -27,6 +28,11 @@ const routes = [
   createCollapseRoute("Perfil", "profile", "person", "/profile", <Profile />),
   { route: "/login", component: <Login />, key: "login" },
   { route: "/register", component: <Register />, key: "register" },
+  {
+    route: "/portafolio-detalles/:id",
+    component: <PortafoliosDetalles />,
+    key: "portafolios-detalles",
+  },
 ];
 
 export default routes;

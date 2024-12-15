@@ -23,8 +23,8 @@ Bienvenido a AssetMaker, una plataforma diseñada para simplificar y optimizar l
 - [File Structure](#file-structure)
 - [Browser Support](#browser-support)
 - [Resources](#resources)
-- [Tecnologías Utilizadas](#tecnologias-utilizadas)
-- [Instalación y Uso](#instalación-uso)
+- [Tecnologías Utilizadas](#tecnologías-utilizadas)
+- [Instalación y Uso](#instalación-y-uso)
 - [Technical Support or Questions](#technical-support-or-questions)
 - [Licensing](#licensing)
 
@@ -165,13 +165,15 @@ At present, we officially aim to support the last two versions of the following 
 
 - Pasos para Ejecutar el Proyecto
     - Clone el repositorio:
+    ```bash
     git clone https://github.com/tu_usuario/assetmaker.git
+    ```
     - Instale las dependencias:
     cd assetmaker
     npm install
-    Ejecute la aplicación:
+    - Ejecute la aplicación:
     npm start
-    Abra http://localhost:3000 en su navegador.
+    - Abra [http://localhost:3000](http://localhost:3000) en su navegador.
 
 ## Technical Support or Questions
 

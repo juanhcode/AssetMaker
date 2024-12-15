@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Modal, TextField, Button, Grid, Skeleton } from "@mui/material";
+import {
+  Modal,
+  TextField,
+  Button,
+  Grid,
+  Skeleton,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -9,8 +19,10 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import ProfileInfoCard from "examples/Cards/InfoCards/ProfileInfoCard";
 import Header from "layouts/profile/components/Header";
 import { ENDPOINTS } from "config";
+import { useParams } from "react-router-dom";
 
 function Overview() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -18,10 +30,13 @@ function Overview() {
   const [profileData, setProfileData] = useState({
     Nombre: "",
     Apellido: "",
-    Móvil: "",
     Email: "",
-    Ubicación: "",
-    Descripción: "",
+    Perfil_De_Riesgo: "",
+  });
+  const [formData, setFormData] = useState({
+    Nombre: "",
+    Apellido: "",
+    Email: "",
     Perfil_De_Riesgo: "",
   });
 
@@ -35,7 +50,7 @@ function Overview() {
     const fetchUserData = async () => {
       try {
         const response = await Promise.race([
-          fetch(ENDPOINTS.PORTAFOLIO), // Aquí va la URL de la API
+          fetch(ENDPOINTS.USERS),
           timeout(3000), // Timeout en 3 segundos
         ]);
 
@@ -47,24 +62,21 @@ function Overview() {
 
         const data = await response.json();
         setProfileData({
-          Nombre: data[0].name,
+          id: data[0].id,
+          Nombre: data[0].first_name,
           Apellido: data[0].last_names,
           Email: data[0].email,
-          Ubicación: data[0].location || "Colombia",
-          Descripción: data[0].description || "Este es mi perfil",
           Perfil_De_Riesgo: data[0].risk_profile,
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
         // Datos quemados en caso de error
         setProfileData({
+          id: "default-id",
           Nombre: "John",
           Apellido: "Doe",
-          Móvil: "1234567890",
           Email: "johndoe@example.com",
-          Ubicación: "Colombia",
-          Descripción: "Este es un perfil de muestra",
-          Perfil_De_Riesgo: "Moderado",
+          Perfil_De_Riesgo: "High",
         });
       }
       setLoading(false);
@@ -74,30 +86,62 @@ function Overview() {
   }, []);
 
   const handleModal = (modal, state) => {
+    if (modal === "update" && state) {
+      setFormData({
+        Nombre: "",
+        Apellido: "",
+        Email: "",
+        Perfil_De_Riesgo: "",
+      });
+    }
     setOpenModal((prev) => ({ ...prev, [modal]: state }));
   };
 
-  const handleDelete = () => {
-    setProfileData({
-      Nombre: "",
-      Apellido: "",
-      Móvil: "",
-      Email: "",
-      Ubicación: "",
-      Descripción: "",
-      Perfil_De_Riesgo: "",
-    });
-    handleModal("delete", false);
-    navigate("/");
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(ENDPOINTS.DELETE_USERS(profileData.id), {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar el usuario");
+      }
+      setProfileData({
+        Nombre: "",
+        Apellido: "",
+        Email: "",
+        Perfil_De_Riesgo: "",
+      });
+      handleModal("delete", false);
+      navigate("/");
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProfileData((prevData) => ({ ...prevData, [name]: value }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    handleModal("update", false);
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch(ENDPOINTS.EDIT_USERS(id), {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al actualizar el usuario");
+      }
+
+      handleModal("update", false);
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
   };
 
   const modalStyles = {
@@ -142,13 +186,10 @@ function Overview() {
             <Grid item xs={12} md={6} xl={4}>
               <ProfileInfoCard
                 title="Información del perfil"
-                description={profileData.Descripción}
                 info={{
                   Nombre: profileData.Nombre,
                   Apellido: profileData.Apellido,
-                  Móvil: profileData.Móvil,
                   Email: profileData.Email,
-                  Ubicación: profileData.Ubicación,
                   Perfil_De_Riesgo: profileData.Perfil_De_Riesgo,
                 }}
                 actions={[
@@ -182,25 +223,29 @@ function Overview() {
             Actualizar Usuario
           </MDTypography>
           <MDBox component="form">
-            {[
-              "Nombre",
-              "Apellido",
-              "Móvil",
-              "Email",
-              "Ubicación",
-              "Descripción",
-              "Perfil Riesgo",
-            ].map((field) => (
+            {["Nombre", "Apellido", "Email"].map((field) => (
               <TextField
                 key={field}
                 label={field}
                 name={field}
-                value={profileData[field]}
+                value={formData[field]}
                 {...textFieldProps}
-                multiline={field === "Descripción"}
-                rows={field === "Descripción" ? 4 : 1}
               />
             ))}
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="perfil-de-riesgo-label">Perfil De Riesgo</InputLabel>
+              <Select
+                labelId="perfil-de-riesgo-label"
+                id="perfil-de-riesgo"
+                name="Perfil_De_Riesgo"
+                value={formData.Perfil_De_Riesgo}
+                onChange={handleChange}
+              >
+                <MenuItem value="Conservative">Conservative</MenuItem>
+                <MenuItem value="Moderate">Moderate</MenuItem>
+                <MenuItem value="Risky">Risky</MenuItem>
+              </Select>
+            </FormControl>
             <MDBox mt={3} display="flex" justifyContent="space-between">
               <Button
                 onClick={() => handleModal("update", false)}

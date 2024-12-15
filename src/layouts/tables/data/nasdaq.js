@@ -9,6 +9,7 @@ const headers = {
   "Apca-Api-Secret-Key": "UTTc5XPc8J8qIpRVHTLmzi5ZIg30xsgy0yipL9b3",
 };
 
+// Configuración del limitador para evitar exceso de solicitudes
 const limiter = new Bottleneck({
   maxConcurrent: 1,
   minTime: 300,
@@ -33,6 +34,7 @@ const calcularMaxMinRendimiento = (rendimientoPromedio, desviacionEstandar) => {
   return { maxRendimiento, minRendimiento };
 };
 
+// Componente principal
 function Data({ selectedOption, pagina }) {
   const [rows, setRows] = useState([]);
 
@@ -132,7 +134,7 @@ function Data({ selectedOption, pagina }) {
           return {
             currency: item.symbol,
             price: priceData.precioCierre || 0,
-            threeYearReturn: priceData?.rendimiento ? `${priceData.rendimiento}%` : "0.00%",
+            monthlyReturn: priceData?.rendimiento ? `${priceData.rendimiento}%` : "0.00%",
             desviacionEstandar: priceData?.desviacionEstandar
               ? `${priceData.desviacionEstandar}%`
               : "0.00%",
@@ -179,17 +181,17 @@ function Data({ selectedOption, pagina }) {
     },
     { field: "price", headerName: "Precio", type: "number", width: 100 },
     {
-      field: "threeYearReturn",
+      field: "monthlyReturn",
       headerName: "Rendimiento mensual",
       type: "number",
       width: 170,
       renderCell: (params) => {
-        const rendimiento = parseFloat(params.row.threeYearReturn);
+        const rendimiento = parseFloat(params.row.monthlyReturn);
         const isPositive = rendimiento >= 0;
 
         return (
           <div style={{ color: isPositive ? "green" : "red" }}>
-            {isPositive ? `▲ ${params.row.threeYearReturn}` : `▼ ${params.row.threeYearReturn}`}
+            {isPositive ? `▲ ${params.row.monthlyReturn}` : `▼ ${params.row.monthlyReturn}`}
           </div>
         );
       },

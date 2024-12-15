@@ -152,3 +152,39 @@
 .modal-content button:hover {
     background-color: #ffd700;
 }
+
+.input-register select {
+    width: 100%;
+    height: 50px;
+    background: transparent;
+    border: 2px solid var(--primary-hover-color);
+    border-radius: 40px;
+    font-size: 16px;
+    color: var(--secondary-contrast-color);
+    padding: 10px 45px 10px 20px; /* Ajustar el padding para centrar mejor el texto */
+    appearance: none; /* Eliminar el estilo predeterminado del navegador */
+}
+
+.input-register select:focus {
+    outline: 1px solid var(--primary-hover-color);
+}
+
+.input-register select option {
+    background-color: var(--secondary-color); /* Fondo del <option> */
+    color: var(--secondary-contrast-color); /* Color del texto dentro de <option> */
+}
+
+.input-register select option:checked {
+    background-color: var(--primary-color); /* Color de fondo para la opción seleccionada */
+    color: var(--secondary-color); /* Color de texto para la opción seleccionada */
+}
+
+.input-register .icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    color: var(--secondary-contrast-color);
+    transform: translateY(-50%);
+    font-size: 16px;
+    pointer-events: none; /* Asegura que el icono no interfiera con el clic en el select */
+}

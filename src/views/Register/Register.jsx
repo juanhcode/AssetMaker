@@ -1,23 +1,22 @@
 import React, { useState } from "react";
-import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaUser, FaLock, FaChevronDown, FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
-import { ENDPOINTS } from "../../config";
 import "./Register.css";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    lastName: "",
+    first_name: "",
+    last_names: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    risk_profile: "",
   });
 
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -29,47 +28,56 @@ const Register = () => {
     });
   };
 
+  const validateForm = () => {
+    if (formData.first_name.length < 4 || formData.last_names.length < 4) {
+      return "El nombre y apellido debe tener al menos 4 caracteres";
+    }
+    if (!/^[a-zA-Z]+$/.test(formData.first_name) || !/^[a-zA-Z]+$/.test(formData.last_names)) {
+      return "El nombre y apellido solo puede contener letras";
+    }
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      return "El correo electrónico no es válido";
+    }
+    if (formData.password.length < 8) {
+      return "La contraseña debe tener al menos 8 caracteres";
+    }
+    if (!formData.risk_profile) {
+      return "El perfil de riesgo es obligatorio";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setIsLoading(true);
     setError(null);
 
-    // Validaciones previas
-    if (formData.password !== formData.confirmPassword) {
-      setError("Las contraseñas no coinciden");
-      return;
-    }
-    if (formData.name.length < 4 || formData.lastName.length < 4) {
-      setError("El nombre y apellido debe tener al menos 4 caracteres");
-      return;
-    }
-    if (!/^[a-zA-Z]+$/.test(formData.name) || !/^[a-zA-Z]+$/.test(formData.lastName)) {
-      setError("El nombre y apellido solo puede contener letras");
-      return;
-    }
-
     try {
-      // Llamada al endpoint de registro
-      const response = await fetch(ENDPOINTS.REGISTER, {
+      const response = await fetch("http://34.44.169.14:8082/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          first_name: formData.name,
-          last_names: formData.lastName,
-          email: formData.email,
-          password: formData.password,
-        }),
+        body: JSON.stringify(formData),
       });
 
+      const result = await response.json();
       if (!response.ok) {
-        throw new Error("Error al registrar el usuario. Inténtalo de nuevo.");
+        throw new Error(result.message || "Error al registrar el usuario. Inténtalo de nuevo.");
       }
 
       // Registro exitoso
       setIsRegistered(true);
     } catch (err) {
       setError(err.message || "Error al intentar registrar.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -85,9 +93,9 @@ const Register = () => {
         <div className="input-register">
           <input
             type="text"
-            id="name"
-            name="name"
-            value={formData.name}
+            id="first_name"
+            name="first_name"
+            value={formData.first_name}
             onChange={handleChange}
             placeholder="Nombre"
             required
@@ -97,9 +105,9 @@ const Register = () => {
         <div className="input-register">
           <input
             type="text"
-            id="lastName"
-            name="lastName"
-            value={formData.lastName}
+            id="last_names"
+            name="last_names"
+            value={formData.last_names}
             onChange={handleChange}
             placeholder="Apellido"
             required
@@ -133,23 +141,25 @@ const Register = () => {
           </span>
         </div>
         <div className="input-register">
-          <input
-            type={showConfirmPassword ? "text" : "password"}
-            id="confirmPassword"
-            name="confirmPassword"
-            value={formData.confirmPassword}
+          <select
+            id="risk_profile"
+            name="risk_profile"
+            value={formData.risk_profile}
             onChange={handleChange}
-            placeholder="Confirmar Contraseña"
             required
-          />
-          <span
-            className="toggle-visibility"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
           >
-            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-          </span>
+            <option value="" disabled>
+              Selecciona tu perfil de riesgo
+            </option>
+            <option value="1">Conservative</option>
+            <option value="2">Moderate</option>
+            <option value="3">Risky</option>
+          </select>
+          <FaChevronDown className="icon" />
         </div>
-        <button type="submit">Registrar</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Registrando..." : "Registrar"}
+        </button>
         {error && <p className="error-message-r">{error}</p>}
         <p className="create-link-r primary-color">
           ¿Ya tienes cuenta?

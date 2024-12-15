@@ -183,7 +183,7 @@ function Data({ selectedOption, pagina }) {
             currency: item.symbol,
             name: item.name.split("/")[0].trim(),
             price: priceData.precioCierre || 0,
-            threeYearReturn: priceData?.rendimiento ? `${priceData.rendimiento}%` : "0.00%",
+            monthlyReturn: priceData?.rendimiento ? `${priceData.rendimiento}%` : "0.00%",
             desviacionEstandar: priceData?.desviacionEstandar
               ? `${priceData.desviacionEstandar}%`
               : "0.00%",
@@ -231,17 +231,17 @@ function Data({ selectedOption, pagina }) {
     { field: "name", headerName: "Nombre", width: 100 },
     { field: "price", headerName: "Precio", type: "number", width: 80 },
     {
-      field: "threeYearReturn",
+      field: "monthlyReturn",
       headerName: "Rendimiento Mensual",
       type: "number",
       width: 170,
       renderCell: (params) => {
-        const rendimiento = parseFloat(params.row.threeYearReturn);
+        const rendimiento = parseFloat(params.row.monthlyReturn);
         const isPositive = rendimiento >= 0;
 
         return (
           <div style={{ color: isPositive ? "green" : "red" }}>
-            {isPositive ? `▲ ${params.row.threeYearReturn}` : `▼ ${params.row.threeYearReturn}`}
+            {isPositive ? `▲ ${params.row.monthlyReturn}` : `▼ ${params.row.monthlyReturn}`}
           </div>
         );
       },
