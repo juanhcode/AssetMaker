@@ -12,4 +12,8 @@ export const ENDPOINTS = {
   EDIT_PORTAFOLIO: (id) => `${BASE_URL}/portfolios/${id}`,
   DELETE_PORTAFOLIO: (id) => `${BASE_URL}/portfolios/${id}`,
   DETALLE_PORTAFOLIO: (id) => `${BASE_URL}/portfolios/${id}`,
+  CREATE_ACTIVO: `${BASE_URL}/assets`,
+  ID_ACTIVO: (id) => `${BASE_URL}/assets/${id}`,
+  CREATE_ACTIVO_PORTAFOLIO: `${BASE_URL}/assetsportfolios`,
+  ID_PORTAFOLIO: (id) => `${BASE_URL}/portfolios/${id}`,
 };

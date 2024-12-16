@@ -15,7 +15,6 @@ function Login() {
     e.preventDefault();
     setError(null);
     try {
-      //http://34.45.127.11:8082/rest/auth/login
       const response = await fetch(ENDPOINTS.LOGIN, {
         method: "POST",
         headers: {

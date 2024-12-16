@@ -1,75 +1,126 @@
-// Importaciones principales
 import React, { useState, useEffect } from "react";
-import { CircularProgress, Grid, Card, Button } from "@mui/material";
+import {
+  CircularProgress,
+  Grid,
+  Card,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-
-// Componentes personalizados
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import projectsTableData from "layouts/tables/data/projectsTableData";
 import nasdaq from "layouts/tables/data/nasdaq";
-
 import SelectSmall from "./components/BasicSelect";
+import theme from "assets/theme";
+import { ENDPOINTS } from "config";
 
 function Tables() {
-  // Estados
   const [selectedOption, setSelectedOption] = useState("criptomonedas");
   const [pagina, setPagina] = useState(0);
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
   const [selectedRow, setSelectedRow] = useState(null);
   const [totalRows, setTotalRows] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [portafolios, setPortafolios] = useState([]);
+  const [selectedPortafolio, setSelectedPortafolio] = useState("");
 
-  // Manejo de eventos
+  useEffect(() => {
+    const fetchPortafolios = async () => {
+      try {
+        const response = await fetch(ENDPOINTS.PORTAFOLIO(1));
+        if (response.ok) {
+          const data = await response.json();
+          setPortafolios(data);
+        } else {
+          console.log("No se pudieron obtener los portafolios.");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+      }
+    };
+
+    fetchPortafolios();
+  }, []);
+
   const handleOptionChange = (option) => {
     setSelectedOption(option);
     setLoading(true);
   };
 
-  // Manejo de eventos para la paginación
   const manejarCambioDePagina = (nuevaPagina) => {
-    setPagina(nuevaPagina); // Actualiza la página actual
+    setPagina(nuevaPagina);
     setPaginationModel(nuevaPagina);
     console.log("nueva pagina", nuevaPagina);
   };
 
-  // Datos de la tabla
   const { columns: pColumns, rows: pRows } =
     selectedOption === "criptomonedas"
       ? projectsTableData({ selectedOption, pagina })
       : nasdaq({ selectedOption, pagina });
 
   const handleRowSelection = (selectionModel) => {
-    // Obtener el dato del ítem seleccionado
     const selected = pRows.filter((row) => selectionModel.includes(row.id));
     setSelectedRow(selected);
   };
 
-  const sendData = () => {
-    if (selectedRow && selectedRow.length > 0) {
-      // Realizar la petición con los datos seleccionados
-      console.log("Enviando datos: ", selectedRow);
-      // Aquí puedes usar fetch, axios, etc.
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const handlePortafolioChange = (event) => {
+    setSelectedPortafolio(event.target.value);
+  };
+
+  const sendData = async () => {
+    if (!selectedPortafolio || !selectedRow || selectedRow.length === 0) {
+      alert("Selecciona un portafolio y al menos un activo.");
+      return;
+    }
+
+    // Aqui se puede hacer el llamado a la API para agregar los activos al portafolio
+    const response = await fetch(ENDPOINTS.CREATE_ACTIVO_PORTAFOLIO, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        portafolio_id: selectedPortafolio,
+        activos: selectedRow.map((row) => row.id),
+      }),
+    });
+
+    if (response.ok) {
+      alert("Activos agregados al portafolio con éxito");
+      handleClose();
     } else {
-      alert("No has seleccionado ninguna fila");
+      alert("Error al agregar activos al portafolio");
     }
   };
 
-  // Carga los datos al montar
   useEffect(() => {
-    // Activa el indicador de carga por 3 segundos
     setLoading(true);
     setTimeout(() => {
       if (selectedOption === "criptomonedas") {
-        setTotalRows(21); // Total de criptomonedas
+        setTotalRows(21);
       } else if (selectedOption === "nasdaq") {
-        setTotalRows(5212); // Total del Nasdaq
+        setTotalRows(5212);
       }
-      setLoading(false); // Desactiva el indicador después de 3 segundos
+      setLoading(false);
     }, 3000);
   }, [pagina, selectedOption]);
+
+  const buttonStyles = {
+    fontSize: "1rem",
+    fontWeight: "bold",
+  };
 
   return (
     <DashboardLayout>
@@ -142,7 +193,7 @@ function Tables() {
               </MDBox>
               <MDBox mx={2} py={2} px={2}>
                 <Button
-                  onClick={sendData}
+                  onClick={handleOpen}
                   variant="contained"
                   style={{ fontSize: "1.2rem", color: "white" }}
                 >
@@ -153,7 +204,57 @@ function Tables() {
           </Grid>
         </Grid>
       </MDBox>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Selecciona un Portafolio</DialogTitle>
+        <DialogContent>
+          <Select
+            value={selectedPortafolio}
+            onChange={handlePortafolioChange}
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            {portafolios.map((portafolio) => (
+              <MenuItem key={portafolio.id} value={portafolio.id}>
+                {portafolio.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleClose}
+            variant="outlined"
+            sx={{
+              ...buttonStyles,
+              bgcolor: theme.palette.error.main,
+              color: theme.palette.common.white,
+              borderColor: theme.palette.error.main,
+              "&:hover": {
+                bgcolor: theme.palette.error.main,
+              },
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={sendData}
+            variant="contained"
+            sx={{
+              ...buttonStyles,
+              bgcolor: theme.palette.info.main,
+              color: theme.palette.common.white,
+              "&:hover": {
+                bgcolor: theme.palette.info.main,
+              },
+            }}
+          >
+            Agregar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </DashboardLayout>
   );
 }
+
 export default Tables;
