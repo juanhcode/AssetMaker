@@ -13,6 +13,12 @@ import {
   List,
   ListItem,
   ListItemText,
+  TableCell,
+  TableRow,
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
 } from "@mui/material";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -51,6 +57,7 @@ function PortafoliosDetalles() {
         const response = await fetch(ENDPOINTS.ACTIVOS_PORTAFOLIO(id));
         if (response.ok) {
           const data = await response.json();
+          console.log("Activos del Portafolio:", data);
           setActivos(data);
         } else {
           console.error("No se pudieron obtener Activos del Portafolio.");
@@ -191,13 +198,32 @@ function PortafoliosDetalles() {
             <Typography variant="h4" gutterBottom>
               Activos en el Portafolio
             </Typography>
-            <List>
-              {activos.map((activo) => (
-                <ListItem key={activo.id}>
-                  <ListItemText primary={activo.name} secondary={`Valor: ${activo.value}`} />
-                </ListItem>
-              ))}
-            </List>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Nombre</TableCell>
+                    <TableCell>Símbolo</TableCell>
+                    <TableCell>Rendimiento a 5 años</TableCell>
+                    <TableCell>Riesgo a 5 años</TableCell>
+                    <TableCell>Rendimiento máximo</TableCell>
+                    <TableCell>Rendimiento mínimo</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {activos.map((activo) => (
+                    <TableRow key={activo.id}>
+                      <TableCell>{activo.name}</TableCell>
+                      <TableCell>{activo.symbol}</TableCell>
+                      <TableCell>{activo.fiveYearPerformance}%</TableCell>
+                      <TableCell>{activo.fiveYearRisk}%</TableCell>
+                      <TableCell>{activo.maximumYield}%</TableCell>
+                      <TableCell>{activo.minimumYield}%</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Box>
         ) : (
           <Typography variant="h4" color="error">

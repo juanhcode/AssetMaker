@@ -21,7 +21,6 @@ function Dashboard() {
   const token = localStorage.getItem("token");
   let userModel = {};
   const decodedToken = JSON.parse(atob(token.split(".")[1]));
-  console.log("Decoded token", decodedToken);
   userModel = {
     id: decodedToken.id,
     first_name: decodedToken.firstName,
@@ -31,7 +30,6 @@ function Dashboard() {
   };
   useEffect(() => {
     const obtenerDatos = async () => {
-      console.log("User model", userModel);
       setTimeout(() => {
         setRentabilidadTotal(15);
         setPerfilRiesgo(userModel.risk_profile);

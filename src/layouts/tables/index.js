@@ -38,7 +38,6 @@ function Tables() {
   const token = localStorage.getItem("token");
   let userModel = {};
   const decodedToken = JSON.parse(atob(token.split(".")[1]));
-  console.log("Decoded token", decodedToken);
 
   userModel = {
     id: decodedToken.id,
@@ -111,13 +110,10 @@ function Tables() {
             "Content-Type": "application/json",
           },
         });
-
         let assetId;
-
         if (getResponse.ok) {
           const activos = await getResponse.json();
-          const existingAsset = activos.find((activo) => activo.name === row.name);
-
+          const existingAsset = activos.find((activo) => activo.symbol === row.currency);
           if (existingAsset) {
             // El activo ya existe, obtener el ID
             assetId = existingAsset.id;
@@ -130,15 +126,13 @@ function Tables() {
               },
               body: JSON.stringify({
                 name: row.name,
-                symbol: row.symbol,
-                //fiveYearPerformance: row.fiveYearPerformance,
-                //fiveYearRisk: row.fiveYearRisk,
-                //maximumYield: row.maximumYield,
-                //minimumYield: row.minimumYield,
-                //tipo: selectedOption,
+                symbol: row.currency,
+                fiveYearPerformance: row.fiveYearPerformance.split("%")[0],
+                fiveYearRisk: row.fiveYearRisk.split("%")[0],
+                maximumYield: row.maximumYield.split("%")[0],
+                minimumYield: row.minimumYield.split("%")[0],
               }),
             });
-
             if (createResponse.ok) {
               const createdData = await createResponse.json();
               assetId = createdData.id;
