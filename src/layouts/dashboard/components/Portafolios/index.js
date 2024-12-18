@@ -33,11 +33,22 @@ const Portafolios = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true); // Estado para manejar la carga de los portafolios
 
+  const token = localStorage.getItem("token");
+  let userModel = {};
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  console.log("Decoded token", decodedToken);
+  userModel = {
+    id: decodedToken.id,
+    first_name: decodedToken.firstName,
+    last_names: decodedToken.lastName,
+    email: decodedToken.email,
+    risk_profile: decodedToken.riskProfile,
+  };
   // Obtener los portafolios del usuario (GET)
   useEffect(() => {
     const fetchPortafolios = async () => {
       try {
-        const response = await fetch(ENDPOINTS.PORTAFOLIO(1));
+        const response = await fetch(ENDPOINTS.PORTAFOLIO(userModel.id));
         if (response.ok) {
           const data = await response.json();
           setPortafolios(data);
@@ -85,7 +96,7 @@ const Portafolios = () => {
       averageAnnualReturn: 15.62,
       portfolioPerformance: 43.52,
       standardDeviation: 25.58,
-      idUser: 1, // Cambiar por el ID del usuario actual
+      idUser: userModel.id, // Cambiar por el ID del usuario actual
     };
 
     try {

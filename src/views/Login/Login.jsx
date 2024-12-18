@@ -29,7 +29,7 @@ function Login() {
       }
 
       const user = await response.json();
-
+      localStorage.setItem("token", user.token);
       // Si el inicio de sesión es exitoso, redirigir al dashboard
       if (user.email === email) {
         navigate("/dashboard");

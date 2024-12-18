@@ -18,12 +18,23 @@ function Dashboard() {
   const [rentabilidadTotal, setRentabilidadTotal] = useState(0);
   const [perfilRiesgo, setPerfilRiesgo] = useState("");
   const [loading, setLoading] = useState(true);
-
+  const token = localStorage.getItem("token");
+  let userModel = {};
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  console.log("Decoded token", decodedToken);
+  userModel = {
+    id: decodedToken.id,
+    first_name: decodedToken.firstName,
+    last_names: decodedToken.lastName,
+    email: decodedToken.email,
+    risk_profile: decodedToken.riskProfile,
+  };
   useEffect(() => {
     const obtenerDatos = async () => {
+      console.log("User model", userModel);
       setTimeout(() => {
         setRentabilidadTotal(15);
-        setPerfilRiesgo("Alto");
+        setPerfilRiesgo(userModel.risk_profile);
         setLoading(false);
       }, 2000); // Simula una carga de datos
     };
