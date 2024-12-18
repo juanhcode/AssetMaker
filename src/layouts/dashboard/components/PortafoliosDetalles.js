@@ -10,9 +10,6 @@ import {
   Divider,
   Card,
   CardContent,
-  List,
-  ListItem,
-  ListItemText,
   TableCell,
   TableRow,
   TableContainer,
@@ -75,11 +72,23 @@ function PortafoliosDetalles() {
     alert(`Generando reporte para ${portafolios.name}`);
   };
 
+  // Calcular el rendimiento mensual promedio
+  const rendimientoMensualPromedio =
+    activos.length > 0
+      ? activos.reduce((acc, activo) => acc + (activo.fiveYearPerformance || 0), 0) / activos.length
+      : 0;
+
+  // Calcular la desviación estándar promedio
+  const desviacionEstandarPromedio =
+    activos.length > 0
+      ? activos.reduce((acc, activo) => acc + (activo.fiveYearRisk || 0), 0) / activos.length
+      : 0;
+
   const getChartData = (data, labels) => ({
     labels: labels || ["Categoría 1", "Categoría 2", "Categoría 3"],
     datasets: [
       {
-        data: data?.length ? data : [30, 40, 30], // Valores quemados
+        data: data?.length ? data : [30, 40, 30], // Valores predeterminados
         backgroundColor: ["#4CAF50", "#FFC107", "#2196F3", "#E91E63", "#FF5722"],
         hoverBackgroundColor: ["#66BB6A", "#FFD54F", "#42A5F5", "#EC407A", "#FF7043"],
         borderColor: "#ffffff",
@@ -134,21 +143,25 @@ function PortafoliosDetalles() {
                 <Typography variant="h4" gutterBottom>
                   Riesgo por activo
                 </Typography>
-                <Doughnut
-                  data={getChartData(portafolios?.riesgo, ["Activo 1", "Activo 2", "Activo 3"])}
-                />
+                <Box sx={{ width: "90%", height: "90%" }}>
+                  <Doughnut
+                    data={getChartData(portafolios?.riesgo, ["Activo 1", "Activo 2", "Activo 3"])}
+                  />
+                </Box>
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h4" gutterBottom>
                   Rendimiento mensual
                 </Typography>
-                <Doughnut
-                  data={getChartData(portafolios?.rendimiento, [
-                    "Activo 1",
-                    "Activo 2",
-                    "Activo 3",
-                  ])}
-                />
+                <Box sx={{ width: "90%", height: "90%" }}>
+                  <Doughnut
+                    data={getChartData(portafolios?.rendimiento, [
+                      "Activo 1",
+                      "Activo 2",
+                      "Activo 3",
+                    ])}
+                  />
+                </Box>
               </Grid>
             </Grid>
 
@@ -174,7 +187,7 @@ function PortafoliosDetalles() {
                       Rendimiento Mensual
                     </Typography>
                     <Typography variant="body1" mt={2}>
-                      {portafolios.rendimientoMensual || "5%"}
+                      {rendimientoMensualPromedio.toFixed(2)}%
                     </Typography>
                   </CardContent>
                 </Card>
@@ -186,7 +199,7 @@ function PortafoliosDetalles() {
                       Desviación Estándar
                     </Typography>
                     <Typography variant="body1" mt={2}>
-                      {portafolios.desviacionEstandar || "2.3"}
+                      {desviacionEstandarPromedio.toFixed(2)}
                     </Typography>
                   </CardContent>
                 </Card>
