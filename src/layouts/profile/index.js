@@ -40,6 +40,18 @@ function Overview() {
 
   const [loading, setLoading] = useState(true);
 
+  const token = localStorage.getItem("token");
+  let userModel = {};
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  console.log("Decoded token", decodedToken);
+  userModel = {
+    id: decodedToken.id,
+    first_name: decodedToken.firstName,
+    last_names: decodedToken.lastName,
+    email: decodedToken.email,
+    risk_profile: decodedToken.riskProfile,
+  };
+
   useEffect(() => {
     // Función para simular un timeout
     const timeout = (ms) =>
@@ -47,23 +59,11 @@ function Overview() {
 
     const fetchUserData = async () => {
       try {
-        const response = await Promise.race([
-          fetch(ENDPOINTS.USERS),
-          timeout(3000), // Timeout en 3 segundos
-        ]);
-
-        console.log("Response", response);
-
-        if (!response.ok) {
-          throw new Error("Error al cargar los datos del usuario");
-        }
-
-        const data = await response.json();
         setProfileData({
-          id: data[0].id,
-          Nombre: data[0].first_name,
-          Apellido: data[0].last_names,
-          Perfil_De_Riesgo: data[0].risk_profile,
+          id: userModel.id,
+          Nombre: userModel.first_name,
+          Apellido: userModel.last_names,
+          Perfil_De_Riesgo: userModel.risk_profile,
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -84,9 +84,9 @@ function Overview() {
   const handleModal = (modal, state) => {
     if (modal === "update" && state) {
       setFormData({
-        Nombre: "",
-        Apellido: "",
-        Perfil_De_Riesgo: "",
+        Nombre: userModel.first_name,
+        Apellido: userModel.last_names,
+        Perfil_De_Riesgo: userModel.risk_profile,
       });
     }
     setOpenModal((prev) => ({ ...prev, [modal]: state }));
@@ -94,7 +94,7 @@ function Overview() {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(ENDPOINTS.DELETE_USERS(profileData.id), {
+      const response = await fetch(ENDPOINTS.DELETE_USERS(userModel.id), {
         method: "DELETE",
       });
 
@@ -130,7 +130,7 @@ function Overview() {
         risk_profile: formData.Perfil_De_Riesgo,
       };
 
-      const response = await fetch(ENDPOINTS.EDIT_USERS(profileData.id), {
+      const response = await fetch(ENDPOINTS.EDIT_USERS(userModel.id), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

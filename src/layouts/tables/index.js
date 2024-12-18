@@ -32,11 +32,21 @@ function Tables() {
   const [open, setOpen] = useState(false);
   const [portafolios, setPortafolios] = useState([]);
   const [selectedPortafolio, setSelectedPortafolio] = useState("");
-
+  const token = localStorage.getItem("token");
+  let userModel = {};
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  console.log("Decoded token", decodedToken);
+  userModel = {
+    id: decodedToken.id,
+    first_name: decodedToken.firstName,
+    last_names: decodedToken.lastName,
+    email: decodedToken.email,
+    risk_profile: decodedToken.riskProfile,
+  };
   useEffect(() => {
     const fetchPortafolios = async () => {
       try {
-        const response = await fetch(ENDPOINTS.PORTAFOLIO(1));
+        const response = await fetch(ENDPOINTS.PORTAFOLIO(userModel.id));
         if (response.ok) {
           const data = await response.json();
           setPortafolios(data);
@@ -84,26 +94,33 @@ function Tables() {
       alert("Selecciona un portafolio y al menos un activo.");
       return;
     }
-
     // Aqui se puede hacer el llamado a la API para agregar los activos al portafolio
-    const response = await fetch(ENDPOINTS.CREATE_ACTIVO_PORTAFOLIO, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        portafolio_id: selectedPortafolio,
-        activos: selectedRow.map((row) => row.id),
-      }),
-    });
+    for (const row of selectedRow) {
+      const response = await fetch(ENDPOINTS.CREATE_ACTIVO_PORTAFOLIO, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idPortfolio: selectedPortafolio,
+          idAsset: row.id,
+        }),
+      });
 
-    if (response.ok) {
-      alert("Activos agregados al portafolio con éxito");
-      handleClose();
-    } else {
-      alert("Error al agregar activos al portafolio");
+      if (response.ok) {
+        alert("Activos agregados al portafolio con éxito");
+        handleClose();
+      } else {
+        alert("Error al agregar activos al portafolio");
+      }
+
+      if (!response.ok) {
+        alert("Error al agregar el activo con ID " + row.id + " al portafolio");
+        return;
+      }
     }
   };
+  
 
   useEffect(() => {
     setLoading(true);
