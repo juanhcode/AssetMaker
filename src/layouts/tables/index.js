@@ -32,10 +32,14 @@ function Tables() {
   const [open, setOpen] = useState(false);
   const [portafolios, setPortafolios] = useState([]);
   const [selectedPortafolio, setSelectedPortafolio] = useState("");
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
   const token = localStorage.getItem("token");
   let userModel = {};
   const decodedToken = JSON.parse(atob(token.split(".")[1]));
   console.log("Decoded token", decodedToken);
+
   userModel = {
     id: decodedToken.id,
     first_name: decodedToken.firstName,
@@ -43,6 +47,7 @@ function Tables() {
     email: decodedToken.email,
     risk_profile: decodedToken.riskProfile,
   };
+
   useEffect(() => {
     const fetchPortafolios = async () => {
       try {
@@ -94,33 +99,88 @@ function Tables() {
       alert("Selecciona un portafolio y al menos un activo.");
       return;
     }
-    // Aqui se puede hacer el llamado a la API para agregar los activos al portafolio
+
+    let successCount = 0;
+
     for (const row of selectedRow) {
-      const response = await fetch(ENDPOINTS.CREATE_ACTIVO_PORTAFOLIO, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          idPortfolio: selectedPortafolio,
-          idAsset: row.id,
-        }),
-      });
+      try {
+        // Verificar si el activo ya existe por name
+        const getResponse = await fetch(ENDPOINTS.ACTIVOS, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      if (response.ok) {
-        alert("Activos agregados al portafolio con éxito");
-        handleClose();
-      } else {
-        alert("Error al agregar activos al portafolio");
-      }
+        let assetId;
 
-      if (!response.ok) {
-        alert("Error al agregar el activo con ID " + row.id + " al portafolio");
-        return;
+        if (getResponse.ok) {
+          const activos = await getResponse.json();
+          const existingAsset = activos.find((activo) => activo.name === row.name);
+
+          if (existingAsset) {
+            // El activo ya existe, obtener el ID
+            assetId = existingAsset.id;
+          } else {
+            // El activo no existe, crear uno nuevo
+            const createResponse = await fetch(ENDPOINTS.CREATE_ACTIVO, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: row.name,
+                symbol: row.symbol,
+                //fiveYearPerformance: row.fiveYearPerformance,
+                //fiveYearRisk: row.fiveYearRisk,
+                //maximumYield: row.maximumYield,
+                //minimumYield: row.minimumYield,
+                //tipo: selectedOption,
+              }),
+            });
+
+            if (createResponse.ok) {
+              const createdData = await createResponse.json();
+              assetId = createdData.id;
+            } else {
+              console.error(`Error al crear activo: ${row.name}`);
+              continue;
+            }
+          }
+        } else {
+          console.error("Error al consultar activos existentes");
+          continue;
+        }
+
+        // Agregar el activo al portafolio
+        const portfolioResponse = await fetch(ENDPOINTS.CREATE_ACTIVO_PORTAFOLIO, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            idPortfolio: selectedPortafolio,
+            idAsset: assetId,
+          }),
+        });
+
+        if (portfolioResponse.ok) {
+          successCount++;
+        } else {
+          console.error(`Error al agregar el activo ${assetId} al portafolio.`);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
       }
     }
+
+    if (successCount > 0) {
+      setSuccessMessage(`Se han agregado ${successCount} activos al portafolio con éxito.`);
+      setSuccessModalOpen(true);
+    }
+
+    handleClose();
   };
-  
 
   useEffect(() => {
     setLoading(true);
@@ -229,7 +289,12 @@ function Tables() {
             value={selectedPortafolio}
             onChange={handlePortafolioChange}
             fullWidth
-            sx={{ mt: 2 }}
+            variant="outlined"
+            size="small"
+            sx={{
+              "& .MuiOutlinedInput-root": { height: "60px" }, // Ajusta la altura
+              "& .MuiInputBase-input": { fontSize: "1.5rem" }, // Tamaño del texto
+            }}
           >
             {portafolios.map((portafolio) => (
               <MenuItem key={portafolio.id} value={portafolio.id}>
@@ -267,6 +332,19 @@ function Tables() {
             }}
           >
             Agregar
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={successModalOpen} onClose={() => setSuccessModalOpen(false)}>
+        <DialogTitle>Éxito</DialogTitle>
+        <DialogContent>
+          <MDTypography variant="body1" color="textPrimary">
+            {successMessage}
+          </MDTypography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSuccessModalOpen(false)} variant="contained" color="white">
+            Aceptar
           </Button>
         </DialogActions>
       </Dialog>

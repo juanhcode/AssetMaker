@@ -170,7 +170,7 @@ function Overview() {
           bgcolor: "grey.900", // Fondo oscuro para modo claro
           color: "white", // Texto blanco para fondo oscuro
         }),
-    borderRadius: "16px",
+    borderRadius: 10,
     boxShadow: theme.shadows[10],
     p: 4,
   };
@@ -242,7 +242,15 @@ function Overview() {
                 {...textFieldProps}
               />
             ))}
-            <FormControl fullWidth margin="normal">
+            <FormControl
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              size="small"
+              sx={{
+                "& .MuiOutlinedInput-root": { height: "28px" },
+              }}
+            >
               <InputLabel id="perfil-de-riesgo-label">Perfil De Riesgo</InputLabel>
               <Select
                 labelId="perfil-de-riesgo-label"
