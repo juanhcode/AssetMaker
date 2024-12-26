@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
+
 import {
   Grid,
   Box,
@@ -10,15 +11,21 @@ import {
   Divider,
   Card,
   CardContent,
-  List,
-  ListItem,
-  ListItemText,
+  TableCell,
+  TableRow,
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
 } from "@mui/material";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { useParams } from "react-router-dom";
 import theme from "assets/theme";
 import { ENDPOINTS } from "../../../config";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import "jspdf-autotable";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -51,6 +58,7 @@ function PortafoliosDetalles() {
         const response = await fetch(ENDPOINTS.ACTIVOS_PORTAFOLIO(id));
         if (response.ok) {
           const data = await response.json();
+          console.log("Activos del Portafolio:", data);
           setActivos(data);
         } else {
           console.error("No se pudieron obtener Activos del Portafolio.");
@@ -64,15 +72,97 @@ function PortafoliosDetalles() {
     fetchActivos();
   }, [id]);
 
-  const handleReport = () => {
-    alert(`Generando reporte para ${portafolios.name}`);
+  const handleReport = async () => {
+    await handleDownloadPDF();
   };
+
+  const handleDownloadPDF = async () => {
+    const doc = new jsPDF();
+    const margin = 10;
+    let yPosition = 10; // Posición inicial
+
+    // Añadir el título del reporte
+    doc.setFontSize(16);
+    doc.text("Reporte del Portafolio", margin, yPosition);
+    yPosition += 10;
+
+    // Capturar y añadir los gráficos al PDF
+    const charts = document.querySelectorAll("canvas"); // Seleccionar todos los gráficos (canvas)
+    for (const chart of charts) {
+      const canvasImage = chart.toDataURL("image/png");
+      const imgWidth = 180; // Ajustar ancho para el PDF
+      const imgHeight = (chart.height * imgWidth) / chart.width; // Mantener proporción
+
+      if (yPosition + imgHeight > doc.internal.pageSize.height) {
+        doc.addPage(); // Crear nueva página si no hay espacio
+        yPosition = margin;
+      }
+
+      doc.addImage(canvasImage, "PNG", margin, yPosition, imgWidth, imgHeight);
+      yPosition += imgHeight + 10; // Ajustar la posición para el próximo gráfico
+    }
+
+    // Añadir la tabla de activos
+    yPosition += 10; // Espaciado antes de la tabla
+    doc.setFontSize(14);
+    doc.text("Activos del Portafolio", margin, yPosition);
+    yPosition += 10;
+
+    const tableHeaders = [
+      "Nombre",
+      "Símbolo",
+      "5 Años (%)",
+      "Riesgo (%)",
+      "Máximo (%)",
+      "Mínimo (%)",
+    ];
+    const tableData = activos.map((activo) => [
+      activo.name,
+      activo.symbol,
+      activo.fiveYearPerformance,
+      activo.fiveYearRisk,
+      activo.maximumYield,
+      activo.minimumYield,
+    ]);
+
+    const tableColumnWidth = [40, 25, 25, 25, 30, 30];
+
+    doc.autoTable({
+      startY: yPosition,
+      head: [tableHeaders],
+      body: tableData,
+      columnStyles: {
+        0: { cellWidth: tableColumnWidth[0] },
+        1: { cellWidth: tableColumnWidth[1] },
+        2: { cellWidth: tableColumnWidth[2] },
+        3: { cellWidth: tableColumnWidth[3] },
+        4: { cellWidth: tableColumnWidth[4] },
+        5: { cellWidth: tableColumnWidth[5] },
+      },
+      styles: { fontSize: 10 }, // Reducir tamaño de fuente para ajustarse al espacio
+    });
+
+    // Descargar el PDF
+    doc.save("reporte_portafolio.pdf");
+  };
+
+  // Calcular el rendimiento mensual promedio
+  const rendimientoMensualPromedio =
+    activos.length > 0
+      ? activos.reduce((acc, activo) => acc + (activo.fiveYearPerformance || 0), 0) / activos.length
+      : 0;
+
+  // Calcular la desviación estándar promedio
+  const desviacionEstandarPromedio =
+    activos.length > 0
+      ? activos.reduce((acc, activo) => acc + (activo.fiveYearRisk || 0), 0) / activos.length
+      : 0;
 
   const getChartData = (data, labels) => ({
     labels: labels || ["Categoría 1", "Categoría 2", "Categoría 3"],
     datasets: [
       {
-        data: data?.length ? data : [30, 40, 30], // Valores quemados
+        data: data?.length ? data : [30, 40, 30], // Valores predeterminados
         backgroundColor: ["#4CAF50", "#FFC107", "#2196F3", "#E91E63", "#FF5722"],
         hoverBackgroundColor: ["#66BB6A", "#FFD54F", "#42A5F5", "#EC407A", "#FF7043"],
         borderColor: "#ffffff",
@@ -127,21 +217,27 @@ function PortafoliosDetalles() {
                 <Typography variant="h4" gutterBottom>
                   Riesgo por activo
                 </Typography>
-                <Doughnut
-                  data={getChartData(portafolios?.riesgo, ["Activo 1", "Activo 2", "Activo 3"])}
-                />
+                <Box sx={{ maxWidth: 300, margin: "0 auto" }}>
+                  <Doughnut
+                    data={getChartData(
+                      activos.map((activo) => activo.fiveYearRisk),
+                      activos.map((activo) => activo.name)
+                    )}
+                  />
+                </Box>
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h4" gutterBottom>
                   Rendimiento mensual
                 </Typography>
-                <Doughnut
-                  data={getChartData(portafolios?.rendimiento, [
-                    "Activo 1",
-                    "Activo 2",
-                    "Activo 3",
-                  ])}
-                />
+                <Box sx={{ width: "90%", height: "90%" }}>
+                  <Doughnut
+                    data={getChartData(
+                      activos.map((activo) => activo.fiveYearRisk),
+                      activos.map((activo) => activo.name)
+                    )}
+                  />
+                </Box>
               </Grid>
             </Grid>
 
@@ -167,7 +263,7 @@ function PortafoliosDetalles() {
                       Rendimiento Mensual
                     </Typography>
                     <Typography variant="body1" mt={2}>
-                      {portafolios.rendimientoMensual || "5%"}
+                      {rendimientoMensualPromedio.toFixed(2)}%
                     </Typography>
                   </CardContent>
                 </Card>
@@ -179,7 +275,7 @@ function PortafoliosDetalles() {
                       Desviación Estándar
                     </Typography>
                     <Typography variant="body1" mt={2}>
-                      {portafolios.desviacionEstandar || "2.3"}
+                      {desviacionEstandarPromedio.toFixed(2)}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -191,13 +287,35 @@ function PortafoliosDetalles() {
             <Typography variant="h4" gutterBottom>
               Activos en el Portafolio
             </Typography>
-            <List>
+            <Grid container spacing={4}>
               {activos.map((activo) => (
-                <ListItem key={activo.id}>
-                  <ListItemText primary={activo.name} secondary={`Valor: ${activo.value}`} />
-                </ListItem>
+                <Grid item xs={12} sm={6} md={4} key={activo.id}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" fontWeight="bold">
+                        {activo.name}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        Símbolo: {activo.symbol}
+                      </Typography>
+                      <Divider sx={{ my: 2 }} />
+                      <Typography variant="body2">
+                        Rendimiento a 1 año: {activo.fiveYearPerformance}%
+                      </Typography>
+                      <Typography variant="body2">
+                        Riesgo a 5 año: {activo.fiveYearRisk}%
+                      </Typography>
+                      <Typography variant="body2">
+                        Rendimiento máximo: {activo.maximumYield}%
+                      </Typography>
+                      <Typography variant="body2">
+                        Rendimiento mínimo: {activo.minimumYield}%
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
               ))}
-            </List>
+            </Grid>
           </Box>
         ) : (
           <Typography variant="h4" color="error">

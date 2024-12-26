@@ -44,17 +44,12 @@ function Data({ selectedOption, pagina }) {
 
     try {
       if (cache[symbol]) {
-        console.time(`${cacheKey}-cache`);
-        console.log(`Usando caché para ${symbol}`);
-        console.timeEnd(`${cacheKey}-cache`);
         return cache[symbol];
       }
 
       const now = new Date();
       const endDate = now.toISOString().split("T")[0];
       const startDate = new Date(now.setMonth(now.getMonth() - 48)).toISOString().split("T")[0];
-      console.time(`${cacheKey}-fetch`);
-      console.log(`Realizando petición a Alpaca para ${symbol}`);
 
       const response = await limiter.schedule(() =>
         fetch(
@@ -64,11 +59,9 @@ function Data({ selectedOption, pagina }) {
       );
       const data = await response.json();
       const bars = data.bars?.[`${symbol}`] || [];
-      console.log(`Precios para ${symbol}:`, bars);
 
       // Extrayendo precios de cierre
       const precioCierre = bars.map((bar) => bar.c).slice(-48);
-      console.log(`Precios de cierre para ${symbol}:`, precioCierre);
 
       let rendimientos = [];
       for (let i = 1; i < precioCierre.length; i++) {
@@ -77,14 +70,12 @@ function Data({ selectedOption, pagina }) {
         const fiveYearPerformance = ((precioActual - precioAnterior) / precioAnterior) * 100;
         rendimientos.push(fiveYearPerformance);
       }
-      console.log(`Rendimientos para ${symbol}:`, rendimientos);
 
       const fiveYearPerformance =
         rendimientos.reduce((acc, val) => acc + val, 0) / rendimientos.length;
 
       // Calcular desviación estándar
       const fiveYearRisk = calcularDesviacionEstandar(rendimientos);
-      console.log(`Desviación estándar para ${symbol}:`, fiveYearRisk);
 
       // Calcular máximos y mínimos rendimientos
       const { maximumYield, minRendimiento } = calcularMaxMinRendimiento(
@@ -99,14 +90,13 @@ function Data({ selectedOption, pagina }) {
         maximumYield: maximumYield.toFixed(2),
         minRendimiento: minRendimiento.toFixed(2),
       };
-      console.log(`Rendimiento promedio para ${symbol}:`, priceData);
 
       cache[symbol] = priceData;
 
       console.timeEnd(`${cacheKey}-fetch`);
       return priceData;
     } catch (error) {
-      console.error("Error fetching price:", error);
+      console.log("Error al obtener precios de NASDAQ:", error);
     }
   };
 
@@ -114,8 +104,6 @@ function Data({ selectedOption, pagina }) {
   const fetchDataNasdaq = async (page) => {
     try {
       if (dataCache[page]) return setRows(dataCache[page]);
-
-      console.time("fetchDataNasdaq");
 
       const response = await fetch(
         "https://paper-api.alpaca.markets/v2/assets?status=active&asset_class=us_equity&exchange=NASDAQ",
@@ -151,10 +139,8 @@ function Data({ selectedOption, pagina }) {
       dataCache[page] = sortedDataWithIds;
 
       setRows(sortedDataWithIds);
-
-      console.timeEnd("fetchDataNasdaq");
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.log("Error al obtener datos de NASDAQ:", error);
     }
   };
 
