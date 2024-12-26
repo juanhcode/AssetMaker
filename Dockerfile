@@ -1,26 +1,35 @@
 # Fase de construcción
 FROM node:20-bullseye as build
 
+# Establece el directorio de trabajo
 WORKDIR /app
 
+# Copia los archivos necesarios para instalar dependencias
 COPY package*.json ./
+
+# Instala las dependencias
 RUN npm install
 
+# Copia el resto del código fuente
 COPY . .
+
+# Construye la aplicación para producción
 RUN npm run build
 
 # Fase de ejecución
-FROM node:20-bullseye
+FROM nginx:stable-alpine
 
-WORKDIR /app
+# Elimina la configuración por defecto de Nginx
+RUN rm /etc/nginx/conf.d/default.conf
 
-COPY --from=build /app/build ./build
+# Copia tu configuración personalizada de Nginx
+COPY nginx.conf /etc/nginx/conf.d
 
-# Instalar un servidor para la aplicación React
-RUN npm install -g serve@latest
+# Copia los archivos de construcción al directorio predeterminado de Nginx
+COPY --from=build /app/build /usr/share/nginx/html
 
-EXPOSE 3000
+# Expone el puerto 4200
+EXPOSE 4200
 
-# Comando para servir la aplicación
-CMD ["serve", "-s", "build", "-l", "3000"]
-
+# Inicia Nginx
+CMD ["nginx", "-g", "daemon off;"]
